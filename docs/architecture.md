@@ -5,7 +5,7 @@ single owner, so team members can work in parallel without editing the same file
 
 ```mermaid
 flowchart TB
-    subgraph app["app/  (UI, owner: Sania)"]
+    subgraph app["app/  (UI, built by Abu from the design spec)"]
         Q[Guided questions] --> P[Variable picker]
         P --> V[Chart, map and verdict panel]
     end

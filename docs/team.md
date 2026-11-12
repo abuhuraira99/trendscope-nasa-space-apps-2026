@@ -2,10 +2,10 @@
 
 | Member | Role | Owns | Branch prefix |
 |---|---|---|---|
-| Abu Huraira (@abuhuraira99) | Team lead, analysis, integration | `src/trendscope/analysis/`, `tests/analysis/`, `assets/` (except screenshots), final say on everything | `abu/` |
+| Abu Huraira (@abuhuraira99) | Team lead, analysis, app build, integration | `app/`, `.streamlit/config.toml`, `src/trendscope/analysis/`, `tests/analysis/`, `assets/` (except screenshots), final say on everything | `abu/` |
 | Hafiz Muhammad Haris | Repository, docs, CI, deployment | `docs/` (except `docs/design/`), `tests/conftest.py`, `tests/fixtures/`, `tests/test_app.py`, `.github/workflows/`, `.github/ISSUE_TEMPLATE/`, PR template, `.pre-commit-config.yaml`, `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md` | `haris/` |
 | Muhammad Zawar Khan | Data engineering | `src/trendscope/data/`, `tests/data/`, `data/demo/` | `zawar/` |
-| Sania Shafiq | UI/UX and content | `app/`, `content/`, `docs/design/`, `.streamlit/config.toml`, `assets/screenshots/` | `sania/` |
+| Sania Shafiq | UI/UX research, design spec and content | `docs/design/`, `content/`, `assets/screenshots/` | `sania/` |
 | Muhammad Mohsin | Media and communications | Photos, video and social posts (shared in the team chat, outside the repo) | none |
 
 ## Rules
