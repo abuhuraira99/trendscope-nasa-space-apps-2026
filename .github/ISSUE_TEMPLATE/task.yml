@@ -1,0 +1,27 @@
+name: Task
+description: A unit of work assigned to a team member.
+title: "[Task]: "
+labels: ["task"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should exist when this task is done?
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Data, Analysis, UI, Content, Docs, CI / deployment, Media]
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: A short checklist the reviewer can tick off.
+      value: |
+        - [ ] 
+        - [ ] Tests or screenshots included
