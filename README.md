@@ -123,10 +123,10 @@ TrendScope is built by a five-person team at the Multan local event of NASA Spac
 | Member | Role |
 |---|---|
 | Abu Huraira ([@abuhuraira99](https://github.com/abuhuraira99)) | Team lead, analysis engine, integration |
-| Haris | Repository, documentation, CI and deployment |
-| Zawar | Data engineering: NASA data clients |
-| Sania | UI/UX, app layout, variable glossary |
-| Mohsin | Media, communications and demo video |
+| Hafiz Muhammad Haris | Repository, documentation, CI and deployment |
+| Muhammad Zawar Khan | Data engineering: NASA data clients |
+| Sania Shafiq | UI/UX design, app layout, variable glossary |
+| Muhammad Mohsin | Media, communications and demo video |
 
 See [docs/team.md](docs/team.md) for who owns which part of the code.
 

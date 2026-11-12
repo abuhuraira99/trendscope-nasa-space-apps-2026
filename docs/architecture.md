@@ -47,7 +47,19 @@ only from there.
 3. The UI passes the series to the analysis layer and receives a result object.
 4. The UI draws the chart, the map and the verdict.
 
-## Deployment
+## Running and hosting
 
-The app is deployed to Streamlit Community Cloud from `main`. Earthdata credentials are stored as
-Streamlit secrets, never in the repository.
+| Where | How |
+|---|---|
+| Development | Each developer runs `streamlit run app/streamlit_app.py` locally (`localhost:8501`) |
+| Public app | Streamlit Community Cloud (free). It deploys straight from `main` on GitHub and serves a `*.streamlit.app` link; every merge to `main` redeploys |
+
+TrendScope needs no database and no paid hosting:
+
+- Data is fetched from NASA services on request and cached in memory with `st.cache_data`.
+- Data for the built-in demos ships in the repository as small Parquet files under `data/demo/`, so
+  the demos work even when a NASA service is slow.
+- Earthdata credentials are stored as Streamlit secrets, never in the repository.
+
+Free Community Cloud apps go to sleep after a period without visitors and take a short time to wake
+on the next visit.
