@@ -2,144 +2,175 @@
 
 # TrendScope
 
-**Find out what is changing on Earth, where, by how much, and whether it is real.**
+**See where Earth is changing, and prove it.**
 
-A web tool for exploring trends in NASA Earth science data, built for the
-[2026 NASA Space Apps Challenge](https://www.spaceappschallenge.org/2026/).
+A global atlas of statistically tested trends in NASA Earth data, built for the
+[2026 NASA Space Apps Challenge](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/).
 
-[![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91?logo=nasa&logoColor=white)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
-[![Challenge](https://img.shields.io/badge/challenge-Earth%20System%20Trend%20Detective-1f6feb)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
+**[Open the live app → trendscope-earth.pages.dev](https://trendscope-earth.pages.dev)**
+
 [![CI](https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/python-3.12%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
+[![Data: NASA](https://img.shields.io/badge/data-NASA%20POWER%20%C2%B7%20GISTEMP%20%C2%B7%20GPCP%20%C2%B7%20GRACE%20%C2%B7%20MODIS-1f6feb)](https://trendscope-earth.pages.dev/data)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 </div>
 
-> [!NOTE]
-> **Project status:** the hackathon build runs from **14 to 15 November 2026**. Space Apps rules do not allow
-> challenge work before the event starts, so until then this repository holds only the project structure,
-> team workflow and tooling. The live demo link and screenshots will be added here at submission.
+![TrendScope atlas: a globe coloured by the trend in wet-bulb temperature from 1981 to 2025, with hatching where the change could be chance](assets/screenshots/atlas.jpg)
 
 ## The problem
 
-Satellites and global models produce thousands of Earth science variables. A single variable can rise in
-one region and fall in another, even when one process drives both. Students and curious members of the
-public have no simple way to pick a variable, pull the data for the place they care about, and check
-whether the change they see is a real trend or just noise.
+The challenge asks for a tool that can pick Earth science variables, show how they change, and say
+what is changing, where, by how much, and whether the change is what scientists call significant.
+
+The data exists, but answering those questions takes a scientist. Each NASA product has its own
+portal, grid and format, and a time series alone does not tell you whether a change is real. Year
+to year noise, seasonal cycles and the sheer number of places you could test all make chance look
+like a trend.
 
 ## What TrendScope does
 
-TrendScope turns that workflow into a few guided steps:
+| The challenge asks to | TrendScope |
+|---|---|
+| Select variables measured by missions or produced by models | 19 NASA variables in five groups: heat, water, ice, air and plants. Each has a plain-language definition and an expert note |
+| Acquire them for a region | Every 1° cell on Earth is preprocessed, and any point can be pulled live from NASA POWER in the browser |
+| Visualize the time series | An interactive globe of trends, a year-by-year time-lapse, and a chart for every place with its trend line and 95% range |
+| Measure the rate of change | Sen slope per decade with a Gilbert confidence interval, plus a least-squares fit |
+| Test significance | Mann-Kendall test with an autocorrelation correction, Benjamini-Hochberg false discovery control across each map, a seasonal Mann-Kendall test, Pettitt change points |
+| Help users become detectives | A guided detective mode, six case files, an "opposite fates" finder, and a method page with an interactive shuffle test that makes the p-value visible |
 
-1. **Ask.** The user answers short questions about what they want to investigate (heat, rainfall, drought,
-   vegetation, air quality) and where.
-2. **Pick.** TrendScope suggests matching NASA variables and explains each one in plain language.
-3. **Fetch.** It retrieves the time series for the chosen region from NASA data services.
-4. **See.** An interactive chart shows the series with its trend line, and a map shows where the trend
-   is strongest.
-5. **Test.** It reports the rate of change per decade, a Mann-Kendall significance test, and a verdict a
-   non-specialist can read, for example: *"Temperature rose 0.4 °C per decade. This trend is significant
-   (p = 0.003)."*
+![The investigation panel for Lahore: wet-bulb temperature rising 0.57 °C per decade with very strong evidence, the yearly chart, statistics and a scan of what else is changing](assets/screenshots/investigation.jpg)
 
-Built-in demo investigations show the full flow in one click.
+### Click any place on Earth
 
-## Architecture
+The investigation panel runs the whole analysis in your browser:
+
+- a verdict in plain words: how much the variable changed and how unlikely that is by chance
+- the yearly series with the Sen trend line, its 95% range and the most likely change point
+- the evidence table: Sen slope, Mann-Kendall p, Kendall tau, z, lag-1 autocorrelation, least squares
+- the detection time: how many years of record a trend of this size needs before it is clear
+  (Weatherhead et al. 1998), so a "no trend yet" answer still says something
+- a seasonal fingerprint from live NASA POWER monthly data at that exact point
+- a second opinion from an independent NASA record (MERRA-2 against GISTEMP stations, or against
+  GPCP satellites and gauges)
+- a scan of every other variable at that place, ranked by evidence
+- CSV download and a shareable link
+
+### Six case files
+
+Guided investigations, each grounded in peer-reviewed research and computed live from the data:
+humid heat in Lahore, Arctic amplification, the ozone hole and why the time window matters, the
+Sahel and south-west Australia's opposite rainfall fates, dimming and brightening in Germany and
+India, and Chile's megadrought.
+
+## How it works
 
 ```mermaid
 flowchart LR
-    U([User]) --> UI[Streamlit app<br/>guided questions, charts, map]
-    UI --> D[Data layer<br/>NASA API clients + cache]
-    D --> N[(NASA data services<br/>POWER, Earthdata: MERRA-2,<br/>GPM, GLDAS, MODIS)]
-    UI --> A[Analysis engine<br/>deseasonalising, Mann-Kendall,<br/>Sen's slope]
-    D --> A
-    A --> UI
-    C[Content<br/>variable glossary, demo cases] --> UI
+    subgraph NASA["NASA open data"]
+        P[(NASA POWER on AWS<br/>MERRA-2 · CERES SYN1deg)]
+        G[(GISTEMP v4)]
+        R[(GPCP v2.3)]
+        E[(Earthdata<br/>GRACE · MODIS)]
+    end
+    subgraph Pipeline["Python pipeline"]
+        A[Annual series<br/>per grid cell] --> T[Mann-Kendall · Sen slope<br/>FDR across the map]
+    end
+    subgraph Web["Web app (Cloudflare Pages)"]
+        M[WebGL globe of trends]
+        I[Investigation panel<br/>same tests in TypeScript]
+    end
+    P --> A
+    G --> A
+    R --> A
+    E --> A
+    T -->|compressed grids| M
+    T --> I
+    L[(NASA POWER API<br/>live monthly data)] --> I
 ```
 
-Module boundaries and ownership are described in [docs/architecture.md](docs/architecture.md).
-Data sources are confirmed against the official challenge resources in
-[docs/data-sources.md](docs/data-sources.md).
+1. `pipeline/` downloads NASA POWER's analysis-ready Zarr archive from AWS Open Data, GISTEMP,
+   GPCP and Earthdata products. It builds annual values for every grid cell, from 1981 to the last
+   complete year.
+2. `src/trendscope/analysis/grid_stats.py` runs the trend tests on all cells at once (about 52,000
+   cells by 45 years in seconds) and controls the false discovery rate across each map
+   (Wilks 2016).
+3. The web app (`web/`) shows the maps on a custom WebGL globe and repeats the same tests in
+   TypeScript, so the map and the verdict for a clicked place always agree.
 
-## Tech stack
+### Statistics you can trust
 
-| Layer | Tools |
-|---|---|
-| Web app | Streamlit, Plotly, Folium |
-| Data access | NASA POWER API, NASA Earthdata (`earthaccess`, `xarray`), Parquet cache |
-| Statistics | `pymannkendall` (Mann-Kendall, Sen's slope), `statsmodels`, NumPy, pandas |
-| Quality | Ruff (lint and format), pytest, GitHub Actions CI |
-| Hosting | Streamlit Community Cloud |
+- The TypeScript library is tested against `pymannkendall` reference values: 487 tests, with p-values
+  matching to better than 1e-6.
+- The autocorrelation correction is conservative. It applies only when the lag-1 autocorrelation is
+  positive and significant, and it never shrinks the variance, because the common shortcut turns
+  noise into false trends.
+- Maps hatch every place whose trend does not survive the false discovery test, so a reader sees
+  real change and possible chance side by side.
 
-## Getting started
+The [method page](https://trendscope-earth.pages.dev/method) explains every test twice, in plain
+language and with formulas, with the papers behind them.
 
-Requires Python 3.12 or newer.
+## NASA data
+
+| Variable group | Source | Years |
+|---|---|---|
+| Air and daytime temperature, wet-bulb temperature, cooling degree days, precipitation, soil wetness, evaporation, water vapour, snow, sea ice, ozone, wind | MERRA-2 via [NASA POWER](https://power.larc.nasa.gov) | 1981 to 2025 |
+| Aerosols, clouds, surface sunlight | CERES SYN1deg via NASA POWER | 2001 to 2025 |
+| Surface temperature (observed) | [NASA GISS GISTEMP v4](https://data.giss.nasa.gov/gistemp/) | 1981 to 2025 |
+| Precipitation (observed) | [GPCP v2.3](https://psl.noaa.gov/data/gridded/data.gpcp.html) | 1981 to 2025 |
+| Water stored on land, vegetation greenness | GRACE/GRACE-FO (NASA JPL) and MODIS (NASA LP DAAC) via [Earthdata](https://www.earthdata.nasa.gov) | see the [data page](https://trendscope-earth.pages.dev/data) |
+
+Full citations for every dataset and method are on the
+[data page](https://trendscope-earth.pages.dev/data).
+
+## Run it locally
 
 ```bash
 git clone https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026.git
-cd trendscope-nasa-space-apps-2026
-
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
-
-pip install -r requirements.txt -r requirements-dev.txt
-pip install -e .
+cd trendscope-nasa-space-apps-2026/web
+npm ci
+npm run dev        # http://localhost:5173
+npx vitest run     # statistics tests
 ```
 
-Some NASA datasets need a free [Earthdata login](https://urs.earthdata.nasa.gov/users/new). Copy
-`.env.example` to `.env` and add your credentials there. `.env` is git-ignored.
-
-Run the checks:
-
-```bash
-ruff check .
-pytest
-```
-
-Instructions for launching the app will be added when the app exists (14 November 2026).
+The processed data ships in `web/public/data/`, so the app runs without downloading anything. To
+rebuild the data, see [pipeline/README.md](pipeline/README.md).
 
 ## Project structure
 
 ```text
 .
-├── app/                    Streamlit user interface
-├── content/                Variable glossary and demo investigation text
-├── src/trendscope/
-│   ├── data/               NASA data clients and caching
-│   └── analysis/           Trend statistics
-├── tests/                  Automated tests
-├── docs/                   Architecture, data sources, team and workflow docs
-├── assets/                 Logo, screenshots, media used in docs
-└── .github/                CI, issue and pull request templates, code owners
+├── web/                     The app: React, TypeScript, three.js globe, statistics library
+│   ├── src/lib/stats/       Mann-Kendall, Sen, seasonal, Pettitt, detection time, FDR (+ tests)
+│   ├── src/content/         Variable definitions, case files, method text, citations
+│   └── public/data/         Precomputed global trend grids
+├── pipeline/                NASA data download and grid building
+├── src/trendscope/analysis/ Vectorized trend statistics in Python (+ tests)
+└── docs/                    Build specification, architecture and team docs
 ```
 
-## Team
+## Team TrendScope
 
-TrendScope is built by a five-person team at the Multan local event of NASA Space Apps 2026.
+Multan local event, Pakistan.
 
-| Member | Role |
+| Member | |
 |---|---|
-| Abu Huraira ([@abuhuraira99](https://github.com/abuhuraira99)) | Team lead, analysis engine, integration |
-| Hafiz Muhammad Haris | Repository, documentation, CI and deployment |
-| Muhammad Zawar Khan | Data engineering: NASA data clients |
-| Sania Shafiq | UI/UX research, design spec, variable glossary |
-| Muhammad Mohsin | Media, communications and demo video |
+| Abu Huraira ([@abuhuraira99](https://github.com/abuhuraira99)) | Team lead |
+| Hafiz Muhammad Haris | |
+| Muhammad Zawar Khan | |
+| Sania Shafiq | |
+| Muhammad Mohsin | |
 
-See [docs/team.md](docs/team.md) for who owns which part of the code.
-
-## Contributing
-
-Work happens on feature branches and reaches `main` only through reviewed pull requests. Read
-[CONTRIBUTING.md](CONTRIBUTING.md) before opening one.
+Some components were built with help from an AI coding agent. The team chose the methods and data
+and checked the results against published reference implementations and NASA records.
 
 ## Acknowledgements
 
-This project uses open data from NASA. TrendScope is a hackathon project and is not endorsed by NASA.
-The challenge statement is
-[Be An Earth System Trend Detective!](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
+The data was obtained from National Aeronautics and Space Administration (NASA) Langley Research
+Center's Prediction Of Worldwide Energy Resources (POWER) project funded through the NASA Earth
+Science Division. GISTEMP is produced by NASA GISS, GPCP by NASA GSFC and NOAA, GRACE by NASA JPL,
+and MODIS by NASA LP DAAC. TrendScope is a hackathon project and is not endorsed by NASA.
 
 ## License
 

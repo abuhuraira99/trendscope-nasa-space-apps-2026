@@ -1,0 +1,18 @@
+# TrendScope
+
+> A global atlas of statistically tested trends in NASA Earth data, built by team TrendScope for the 2026 NASA Space Apps Challenge ("Be An Earth System Trend Detective!"). Pick a variable, click any place on Earth, and get a tested verdict: how much it changed since 1981 and whether the change is statistically real.
+
+TrendScope maps 19 NASA variables (MERRA-2 and CERES via NASA POWER, GISTEMP v4, GPCP v2.3, GRACE, MODIS) on a 1 degree grid. Each cell is tested with Sen's slope, a Mann-Kendall test with a conservative Yue and Wang (2004) autocorrelation correction, and Benjamini-Hochberg false discovery rate control across the map.
+
+## Pages
+
+- [Atlas](https://trendscope-earth.pages.dev/): interactive globe, investigation panel, detective mode, plain-language questions
+- [Case files](https://trendscope-earth.pages.dev/cases): six guided investigations computed live from NASA data
+- [Method](https://trendscope-earth.pages.dev/method): every statistical test explained in plain language and with formulas
+- [Data](https://trendscope-earth.pages.dev/data): datasets, years, grids and full citations
+- [About](https://trendscope-earth.pages.dev/about): team, challenge and how it is built
+
+## Data access
+
+- [Variable catalogue (JSON)](https://trendscope-earth.pages.dev/data/vars.json)
+- [Source code and data format](https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026)

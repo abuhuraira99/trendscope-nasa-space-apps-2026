@@ -27,16 +27,43 @@ jobs:
             requirements.txt
             requirements-dev.txt
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
           pip install -e .
 
-      - name: Lint
+      - name: Lint Python
         run: |
           ruff check .
           ruff format --check .
 
-      - name: Test
+      - name: Test the trend statistics (Python)
         run: pytest
+
+  web:
+    name: web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      - name: Test the trend statistics (TypeScript, against pymannkendall fixtures)
+        run: npx vitest run
+
+      - name: Build
+        run: npm run build

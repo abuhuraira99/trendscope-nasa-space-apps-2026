@@ -1,0 +1,30 @@
+{
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 870,
+  "scenes": {
+    "title": [0, 60],
+    "challenge": [60, 150],
+    "hero": [150, 300],
+    "app": [300, 630],
+    "future": [630, 870]
+  },
+  "globeClip": {
+    "frames": 420,
+    "heroFrom": 140,
+    "futureFrom": 620,
+    "futureClipStart": 175
+  },
+  "appClip": {
+    "videoStart": 288,
+    "frames": 356,
+    "zoomInAt": 16.45,
+    "zoomInDuration": 0.95
+  },
+  "captions": [
+    { "from": 10.1, "to": 13.55, "key": "atlas" },
+    { "from": 13.65, "to": 16.75, "key": "test" },
+    { "from": 16.95, "to": 20.85, "key": "lahore" }
+  ]
+}

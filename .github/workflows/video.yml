@@ -1,0 +1,94 @@
+name: Demo video
+
+# Records the live app frame by frame, renders the 30-second demo with Remotion and uploads it.
+on:
+  push:
+    branches: [video]
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: Site to record
+        required: false
+        default: https://trendscope-earth.pages.dev
+
+permissions:
+  contents: read
+
+concurrency:
+  group: video-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    name: record-and-render
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: video
+    env:
+      SITE_URL: ${{ inputs.site_url || 'https://trendscope-earth.pages.dev' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: video/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Install Chromium for recording
+        run: npx playwright install --with-deps --only-shell chromium
+
+      - name: Install ffmpeg for checks
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ffmpeg
+
+      - name: Record footage from the live app
+        run: node record/record.mjs
+
+      - name: Make the soundtrack
+        run: node scripts/make-music.mjs public/music.wav 29
+
+      - name: Render
+        run: >-
+          npx remotion render src/index.ts TrendScopeDemo out/trendscope-demo.mp4
+          --props=public/footage/manifest.json --concurrency=4
+
+      - name: Check length and export stills
+        run: |
+          f=out/trendscope-demo.mp4
+          d=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$f")
+          echo "Duration: ${d} s"
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,pix_fmt,color_space -of compact "$f"
+          awk -v d="$d" 'BEGIN { exit !(d > 0 && d <= 30.0) }' || { echo "::error::Video is ${d} s, the limit is 30 s"; exit 1; }
+          for s in 1 4 8 15 22 28; do
+            ffmpeg -v error -y -ss "$s" -i "$f" -frames:v 1 "out/still-$(printf '%02d' "$s")s.png"
+          done
+          # Extra frames for reviewing motion beats (not part of the deliverable).
+          mkdir -p out/review
+          for s in 5.6 10.4 11.4 12.4 13.4 14.2 15.4 16.2 16.8 17.6 18.4 19.2 20.0 20.8 21.4 24.0 26.0 28.6; do
+            ffmpeg -v error -y -ss "$s" -i "$f" -frames:v 1 -q:v 2 "out/review/at-${s}s.jpg"
+          done
+          echo "### Demo video" >> "$GITHUB_STEP_SUMMARY"
+          echo "Duration ${d} s, size $(du -h "$f" | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trendscope-demo
+          path: |
+            video/out/trendscope-demo.mp4
+            video/out/still-*.png
+            video/out/review/
+            video/public/footage/manifest.json
+            video/public/footage/check-*.png
+          if-no-files-found: error
+          retention-days: 30

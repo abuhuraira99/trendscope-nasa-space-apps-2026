@@ -1,0 +1,336 @@
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+
+:root {
+  --ground: #0b0d10;
+  --panel: #12151a;
+  --panel-2: #171b21;
+  --panel-3: #1d2229;
+  --line: #23272e;
+  --line-strong: #353b44;
+  --ink: #ece8e1;
+  --ink-2: #a8adb5;
+  --ink-3: #7b818a;
+  --warm: #e0805f;
+  --cool: #63a7d6;
+  --ok: #7cc6a4;
+  --warn: #e6b45c;
+
+  --font: "Schibsted Grotesk Variable", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+
+  --t-11: 0.6875rem;
+  --t-12: 0.75rem;
+  --t-13: 0.8125rem;
+  --t-14: 0.875rem;
+  --t-15: 0.9375rem;
+  --t-17: 1.0625rem;
+  --t-20: 1.25rem;
+  --t-24: 1.5rem;
+  --t-32: 2rem;
+  --t-44: 2.75rem;
+  --t-60: 3.75rem;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --d-fast: 160ms;
+  --d-med: 280ms;
+  --d-slow: 520ms;
+
+  --shadow-panel: 0 18px 48px -12px rgb(0 0 0 / 0.55), 0 2px 6px rgb(0 0 0 / 0.35);
+  --topbar-h: 56px;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--t-15);
+  line-height: 1.5;
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  caret-color: var(--ink);
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in oklab, var(--ink) 40%, transparent);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color var(--d-fast) var(--ease);
+}
+
+a:hover {
+  text-decoration-color: var(--ink);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.num,
+.mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  background-clip: padding-box;
+  border-radius: 10px;
+  border: 3px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ink-3);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: var(--ink);
+  color: var(--ground);
+  border-radius: var(--r-sm);
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform var(--d-fast) var(--ease);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* Buttons: one family across the product */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  font-size: var(--t-14);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease),
+    transform var(--d-fast) var(--ease);
+}
+
+.btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--ground);
+}
+
+.btn-primary:hover {
+  background: #fffaf2;
+}
+
+.btn-quiet {
+  background: transparent;
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.btn-quiet:hover {
+  background: var(--panel-2);
+  border-color: color-mix(in oklab, var(--ink) 35%, var(--line-strong));
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+  padding: 0 10px;
+}
+
+.btn-ghost:hover {
+  color: var(--ink);
+  background: var(--panel-2);
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: var(--t-13);
+}
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease);
+}
+
+.icon-btn:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.icon-btn[aria-pressed="true"] {
+  background: var(--panel-3);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.page-loading {
+  min-height: calc(100dvh - var(--topbar-h));
+  padding: 72px 24px;
+}
+
+.page-loading::before,
+.page-loading::after {
+  content: "";
+  display: block;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--panel) 0%, var(--panel-3) 50%, var(--panel) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s var(--ease) infinite;
+}
+
+.page-loading::before {
+  height: 56px;
+  max-width: 520px;
+}
+
+.page-loading::after {
+  height: 18px;
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.app-error {
+  min-height: calc(100dvh - var(--topbar-h));
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  justify-items: start;
+  padding: 24px;
+}

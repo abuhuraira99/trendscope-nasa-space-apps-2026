@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://trendscope-earth.pages.dev/sitemap.xml

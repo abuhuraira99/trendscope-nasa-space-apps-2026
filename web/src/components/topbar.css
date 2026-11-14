@@ -1,0 +1,100 @@
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: var(--topbar-h);
+  padding: 0 20px 0 24px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in oklab, var(--ground) 94%, transparent);
+  backdrop-filter: saturate(140%) blur(10px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 650;
+  font-size: var(--t-17);
+  letter-spacing: -0.02em;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 2px;
+}
+
+.topbar nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  font-size: var(--t-14);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    color var(--d-fast) var(--ease),
+    background-color var(--d-fast) var(--ease);
+}
+
+.topbar nav a:hover {
+  color: var(--ink);
+  background: var(--panel);
+}
+
+.topbar nav a.active {
+  color: var(--ink);
+}
+
+.topbar nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -11px;
+  height: 2px;
+  background: var(--ink);
+}
+
+.topbar-repo {
+  margin-left: auto;
+  font-size: var(--t-13);
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.topbar-repo:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 820px) {
+  .topbar {
+    gap: 12px;
+    padding: 0 12px;
+    overflow-x: auto;
+  }
+
+  .topbar nav a[href="/"] {
+    display: none;
+  }
+
+  .topbar nav a {
+    padding: 0 8px;
+    font-size: var(--t-13);
+  }
+
+  .topbar-repo {
+    display: none;
+  }
+}
+
+.topbar nav a {
+  white-space: nowrap;
+}
