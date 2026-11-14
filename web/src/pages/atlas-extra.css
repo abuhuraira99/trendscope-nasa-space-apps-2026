@@ -213,3 +213,26 @@
     left: 12px;
   }
 }
+
+.sig-key-faint {
+  opacity: 1;
+  background: repeating-linear-gradient(135deg, color-mix(in oklab, var(--warm) 70%, transparent) 0 1.5px, transparent 1.5px 4px);
+  outline: 1px solid color-mix(in oklab, var(--warm) 35%, transparent);
+}
+
+.var-row .var-name {
+  white-space: normal;
+  line-height: 1.25;
+}
+
+@media (min-width: 821px) {
+  .ruler {
+    left: auto;
+    right: 24px;
+    transform: none;
+  }
+
+  .ruler-scrub input[type="range"] {
+    width: 180px;
+  }
+}
