@@ -315,3 +315,37 @@
   border-radius: 50%;
   flex: none;
 }
+
+.insp-windows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.insp-windows button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--ink-2);
+  font-size: var(--t-12);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--d-fast) var(--ease),
+    color var(--d-fast) var(--ease),
+    border-color var(--d-fast) var(--ease);
+}
+
+.insp-windows button:hover {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.insp-windows button[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--ground);
+}

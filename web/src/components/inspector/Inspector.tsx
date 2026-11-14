@@ -39,6 +39,7 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
   const [annual, setAnnual] = useState<{ id: string; years: number[]; values: (number | null)[]; res: AnnualResult } | null>(null);
   const [live, setLive] = useState<{ status: "loading" | "ready" | "error"; data?: PowerPointResult }>({ status: "loading" });
   const [copied, setCopied] = useState(false);
+  const [windowKey, setWindowKey] = useState("all");
 
   const meta = metas.find((m) => m.id === focusVar) ?? metas.find((m) => m.id === globeVar)!;
   const vi = info(meta.id);
@@ -137,7 +138,29 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
   }, [metas, scan]);
 
   const sigCount = rows.filter((r) => r.row && r.row.sig >= 2).length;
-  const res = annual && annual.id === meta.id ? annual.res : null;
+  // Time window: the full record or a sub-period, re-tested on the fly.
+  const windows = useMemo(() => {
+    if (!annual || annual.id !== meta.id) return [];
+    const first = annual.years[0];
+    const last = annual.years[annual.years.length - 1];
+    const list: { key: string; label: string; from: number; to: number }[] = [{ key: "all", label: "Full record", from: first, to: last }];
+    if (first <= 1985 && last >= 2005) {
+      list.push({ key: "early", label: `${first} to 2000`, from: first, to: 2000 });
+      list.push({ key: "late", label: `2001 to ${last}`, from: 2001, to: last });
+    }
+    if (last - first + 1 > 24) list.push({ key: "recent", label: "Last 20 years", from: last - 19, to: last });
+    return list;
+  }, [annual, meta.id]);
+  const win = windows.find((w) => w.key === windowKey) ?? windows[0];
+  const view = useMemo(() => {
+    if (!annual || annual.id !== meta.id || !win) return null;
+    if (win.key === "all") return { years: annual.years, values: annual.values, res: annual.res };
+    const idx = annual.years.map((y, i) => (y >= win.from && y <= win.to ? i : -1)).filter((i) => i >= 0);
+    const years = idx.map((i) => annual.years[i]);
+    const values = idx.map((i) => annual.values[i]);
+    return { years, values, res: analyzeAnnual(years, values) };
+  }, [annual, meta.id, win]);
+  const res = view ? view.res : null;
   const mapRow = scan.get(meta.id);
   const pairId = PAIRS[meta.id];
   const pairMeta = pairId ? metas.find((m) => m.id === pairId) : undefined;
@@ -205,6 +228,15 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
               </button>
             )}
           </div>
+          {windows.length > 1 && (
+            <div className="insp-windows" role="group" aria-label="Time window">
+              {windows.map((w) => (
+                <button key={w.key} type="button" aria-pressed={w.key === (win?.key ?? "all")} onClick={() => setWindowKey(w.key)}>
+                  {w.label}
+                </button>
+              ))}
+            </div>
+          )}
           {res && res.ok ? (
             <>
               <p className="insp-big num">
@@ -225,11 +257,11 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
           )}
         </section>
 
-        {annual && res && res.ok && (
+        {view && res && res.ok && (
           <section className="insp-section">
             <TrendChart
-              years={annual.years}
-              values={annual.values}
+              years={view.years}
+              values={view.values}
               sen={{ intercept: res.intercept, slopePerYear: res.slopePerYear, firstYear: res.firstYear, lastYear: res.lastYear, ciPerDecade: res.ciPerDecade }}
               changeYear={res.pettitt.significant ? res.pettitt.year : null}
               units={vi.unitsLabel}
