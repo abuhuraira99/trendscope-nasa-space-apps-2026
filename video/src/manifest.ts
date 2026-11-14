@@ -11,6 +11,7 @@ export type Manifest = {
     dir: string;
     dsf?: number;
     inspector?: Rect | null;
+    stage?: Rect | null;
     marks?: { picked?: number; scrubStart?: number; scrubEnd?: number };
     facts?: {
       verdict?: string | null;

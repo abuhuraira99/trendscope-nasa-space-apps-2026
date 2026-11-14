@@ -10,7 +10,6 @@ const CARD = { scale: 0.84, top: 34 };
 const CARD_W = 1920 * CARD.scale;
 const CARD_H = 1080 * CARD.scale;
 const CARD_LEFT = (1920 - CARD_W) / 2;
-const ZOOM = 1.28;
 
 function captionText(key: string, m: Manifest) {
   if (key === "atlas") {
@@ -45,12 +44,11 @@ export function AppScene({ frame, manifest }: { frame: number; manifest: Manifes
     extrapolateRight: "clamp",
     easing: easeOut,
   });
-  // After the zoom lands, a slow push keeps the shot alive while the chart is read.
-  const drift = interpolate(frame, [zoomStart + sec(T.appClip.zoomInDuration), END], [0, 0.04], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const z = 1 + (ZOOM - 1) * p + drift;
+  // Zoom until the rail just leaves the frame, so the cut never runs through the search box or
+  // the legend, which both sit at the stage's left edge.
+  const left = (manifest.app?.stage?.x ?? 396) + 12;
+  const zoom = Math.min(1.4, Math.max(1.12, 1920 / (1920 - left)));
+  const z = 1 + (zoom - 1) * p;
   // Keep the right edge (the investigation panel) pinned while zooming in, and drop the top bar.
   const ox = 1920 - 1920 / z;
   const oy = 40 * p;

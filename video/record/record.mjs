@@ -364,6 +364,7 @@ async function recordApp(browser) {
   facts.verdict = await page.evaluate(() => document.querySelector(".insp-big")?.innerText.replace(/\s+/g, " ").trim() ?? null);
   facts.headline = await page.evaluate(() => document.querySelector(".insp-head-line")?.innerText.trim() ?? null);
   const inspector = await boxOf(page, ".inspector");
+  const stage = await boxOf(page, ".stage");
   log("investigation:", JSON.stringify(facts));
   await rec.capture();
   await rec.capture();
@@ -406,7 +407,7 @@ async function recordApp(browser) {
   await rec.holdUntil(timeline.appClip.frames / FPS);
   await page.screenshot({ path: path.join(OUT, "check-app.png") });
   await context.close();
-  return { frames: rec.frame, dir: "footage/app", dsf: 1.5, inspector, marks: rec.marks, facts };
+  return { frames: rec.frame, dir: "footage/app", dsf: 1.5, inspector, stage, marks: rec.marks, facts };
 }
 
 // ---------------------------------------------------------------------------------------------

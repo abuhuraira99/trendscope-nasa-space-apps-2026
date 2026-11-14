@@ -48,7 +48,7 @@ export function FutureScene({ frame, manifest }: { frame: number; manifest: Mani
       )}
       {frame >= 750 && (
         <AbsoluteFill style={{ justifyContent: "center", paddingLeft: 160 }}>
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", alignSelf: "flex-start" }}>
             <div
               style={{
                 fontFamily: MONO,
@@ -66,7 +66,7 @@ export function FutureScene({ frame, manifest }: { frame: number; manifest: Mani
               style={{
                 marginTop: 28,
                 height: 1,
-                width: 560,
+                width: "100%",
                 background: C.lineStrong,
                 transformOrigin: "0 50%",
                 transform: `scaleX(${line})`,
