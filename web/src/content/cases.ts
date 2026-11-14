@@ -299,23 +299,23 @@ export const CASES: CaseFile[] = [
     place: "Sahel, near Niamey, Niger",
     lat: 13.5,
     lon: 2.5,
-    variables: ["precip", "soil", "gpcp"],
+    variables: ["gpcp", "soil", "precip"],
     compareWith: { place: "South-west Australia wheatbelt, east of Perth", lat: -31.5, lon: 116.25 },
     steps: [
       {
         title: "The rains come back",
-        body: "The Sahel, the dry belt south of the Sahara, suffered a long drought in the 1970s and 1980s. Since then its seasonal rainfall has partly recovered (Biasutti 2019). Near Niamey the precipitation verdict is {verdict}, at {slope} per decade (p = {p}).",
-        focus: { variable: "precip", lat: 13.5, lon: 2.5, zoom: 3 },
+        body: "The Sahel, the dry belt south of the Sahara, suffered a long drought in the 1970s and 1980s. Since then its seasonal rainfall has partly recovered (Biasutti 2019). Near Niamey, GPCP rainfall from satellites and rain gauges gives the verdict {verdict}, at {slope} per decade (p = {p}).",
+        focus: { variable: "gpcp", lat: 13.5, lon: 2.5, zoom: 3 },
       },
       {
         title: "The rains drain away",
-        body: "South-west Australia gets its rain in winter, carried by westerly winds from the Southern Ocean. Autumn and winter rainfall there has fallen since about 1970 (Delworth and Zeng 2014). In the wheatbelt east of Perth the verdict is {verdict}, at {slope} per decade.",
-        focus: { variable: "precip", lat: -31.5, lon: 116.25, zoom: 3 },
+        body: "South-west Australia gets its rain in winter, carried by westerly winds from the Southern Ocean. Autumn and winter rainfall there has fallen since about 1970 (Delworth and Zeng 2014). In the wheatbelt east of Perth the GPCP verdict is {verdict}, at {slope} per decade.",
+        focus: { variable: "gpcp", lat: -31.5, lon: 116.25, zoom: 3 },
       },
       {
         title: "One cause, two outcomes",
         body: "Climate model experiments trace most of the Sahel's recovery to rising greenhouse gases (Dong and Sutton 2015). Similar experiments trace south-west Australia's drying to greenhouse gases and ozone loss, which pushed the westerly winds toward the pole (Delworth and Zeng 2014). The same human influence strengthened one rain belt and pulled another away.",
-        focus: { variable: "precip", lat: -9.0, lon: 59.0, zoom: 1 },
+        focus: { variable: "gpcp", lat: -9.0, lon: 59.0, zoom: 1 },
       },
       {
         title: "Follow the water into the soil",
@@ -324,13 +324,13 @@ export const CASES: CaseFile[] = [
       },
       {
         title: "Get a second opinion",
-        body: "GPCP merges satellites with rain gauges on a coarser 2.5° grid and does not use the MERRA-2 model. Its verdict near Niamey is {verdict}, and in south-west Australia {compareVerdict}. When two independent records agree on the sign, the finding no longer rests on one model.",
-        focus: { variable: "gpcp", lat: 13.5, lon: 2.5, zoom: 3 },
+        body: "The MERRA-2 reanalysis builds rainfall from a weather model guided by observations, on a finer grid than GPCP. Its verdict near Niamey is {verdict}, and in south-west Australia {compareVerdict}. Reanalysis rainfall trends are less certain than measured ones, which is why a detective compares more than one record before trusting a result.",
+        focus: { variable: "precip", lat: 13.5, lon: 2.5, zoom: 3 },
       },
       {
         title: "Count the false alarms",
         body: "Opposite trends can turn up by chance when you test thousands of places. TrendScope marks a cell as field significant only when it passes the false discovery rate test (Wilks 2016). Look for whole regions of colour, because a lone pixel can be luck.",
-        focus: { variable: "precip", lat: 0.0, lon: 40.0, zoom: 1 },
+        focus: { variable: "gpcp", lat: 0.0, lon: 40.0, zoom: 1 },
       },
     ],
     takeaway:
