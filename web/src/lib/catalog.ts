@@ -22,6 +22,10 @@ export interface VarInfo {
   powerParam?: string;
   /** multiply live POWER point values by this to match the grid units */
   liveScale?: number;
+  /** fixed colour scale (per decade) when the 2nd to 98th percentile range is dominated by a few regions */
+  scale?: number;
+  /** hide the automatic opposite-fates pair when the extremes are known artefacts */
+  noTwins?: boolean;
   stat: "mean" | "sum";
   sourceLine: string;
   sourceUrl?: string;
@@ -46,7 +50,7 @@ const BASE: Record<string, Omit<VarInfo, "plain" | "whyItMatters" | "expert" | "
   aod: { id: "aod", name: "Aerosol optical depth", shortName: "Haze", sphere: "air", unitsLabel: "", decimals: 3, increaseWord: "hazier", decreaseWord: "clearer", ramp: "aerosol", powerParam: "AOD_55_ADJ", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
   cloud: { id: "cloud", name: "Cloud amount", shortName: "Clouds", sphere: "air", unitsLabel: "%", decimals: 2, increaseWord: "cloudier", decreaseWord: "clearer skies", ramp: "neutral", powerParam: "CLOUD_AMT", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
   solar: { id: "solar", name: "Sunlight at the surface", shortName: "Sunlight", sphere: "air", unitsLabel: "MJ/m²/day", decimals: 3, increaseWord: "brighter", decreaseWord: "dimmer", ramp: "neutral", powerParam: "ALLSKY_SFC_SW_DWN", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
-  tws: { id: "tws", name: "Water stored on land", shortName: "Land water", sphere: "water", unitsLabel: "cm", decimals: 2, increaseWord: "gaining water", decreaseWord: "losing water", ramp: "coolUp", stat: "mean", sourceLine: "GRACE and GRACE-FO, NASA JPL", landOnly: true },
+  tws: { id: "tws", name: "Water stored on land", shortName: "Land water", sphere: "water", unitsLabel: "cm", decimals: 2, increaseWord: "gaining water", decreaseWord: "losing water", ramp: "coolUp", stat: "mean", sourceLine: "GRACE and GRACE-FO, NASA JPL", landOnly: true, scale: 30, noTwins: true },
   ndvi: { id: "ndvi", name: "Vegetation greenness", shortName: "Greenness", sphere: "life", unitsLabel: "NDVI", decimals: 4, increaseWord: "greening", decreaseWord: "browning", ramp: "vegetation", stat: "mean", sourceLine: "MODIS Terra, NASA LP DAAC", landOnly: true },
   wind: { id: "wind", name: "Wind speed", shortName: "Wind", sphere: "air", unitsLabel: "m/s", decimals: 3, increaseWord: "windier", decreaseWord: "calmer", ramp: "neutral", powerParam: "WS10M", stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
 };
@@ -111,3 +115,11 @@ export function info(id: string): VarInfo {
 }
 
 export const ALL_IDS = Object.keys(BASE);
+
+/** Colour scale for a variable's trend map: half-width of the diverging ramp, per decade. */
+export function slopeScaleFor(m: { id: string; slopeRange: [number, number] }): number {
+  const fixed = info(m.id).scale;
+  if (fixed) return fixed;
+  const s = Math.max(Math.abs(m.slopeRange[0]), Math.abs(m.slopeRange[1]));
+  return s > 0 ? s : 1;
+}

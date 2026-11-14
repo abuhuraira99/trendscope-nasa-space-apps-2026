@@ -29,8 +29,8 @@ export default function About() {
           <div className="prose">
             <p>
               The challenge asks for a tool that selects Earth science variables, visualizes how they change, and determines what is
-              changing, where, by how much, and whether the change is significant. TrendScope does each of those at global scale: 17 NASA
-              variables, mapped and tested at every cell of a 1 degree grid from 1981 to 2025.
+              changing, where, by how much, and whether the change is significant. TrendScope does each of those at global scale: 19 NASA
+              variables, mapped and tested at every cell of a 1 degree grid, most of them from 1981 to 2025.
             </p>
             <p>
               Click any place and the investigation panel runs the full analysis in your browser: a Sen trend with its 95% range, a

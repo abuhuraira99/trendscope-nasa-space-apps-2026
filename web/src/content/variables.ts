@@ -582,10 +582,10 @@ export const VARIABLES: Record<VarId, VariableInfo> = {
     whyItMatters:
       "Greenness shows crop health and drought stress, and it reveals where forests are lost. MODIS has mapped it every 16 days since 2000.",
     expert:
-      "Planned: MODIS Terra MOD13C2 Version 6.1 monthly NDVI on a 0.05° grid from 2000 (Didan 2021). Trends need care with sensor ageing and changes in viewing geometry, and the record would be about 20 years shorter than MERRA-2.",
-    units: "unitless",
-    unitsLabel: "",
-    decimals: 3,
+      "MODIS Terra MOD13C2 Version 6.1 monthly NDVI (Didan 2021), sampled from the 0.05° climate modelling grid to 1° through NASA OPeNDAP, 2001 to 2025. Annual means include snow-season months where MODIS reports a value, so some northern cells mix in snow changes; trends also need care with sensor ageing.",
+    units: "NDVI",
+    unitsLabel: "NDVI",
+    decimals: 4,
     increaseWord: "greening",
     decreaseWord: "browning",
     rampKind: "wetness",
@@ -598,9 +598,9 @@ export const VARIABLES: Record<VarId, VariableInfo> = {
       url: "https://doi.org/10.5067/MODIS/MOD13C2.061",
     },
     landscapes: ["farmland", "rainforest", "desert"],
-    available: false,
+    available: true,
     annualStat: "mean",
-    firstYear: 2000,
+    firstYear: 2001,
     sourceIds: ["didan2021"],
   },
   tws: {
@@ -612,7 +612,7 @@ export const VARIABLES: Record<VarId, VariableInfo> = {
     whyItMatters:
       "The GRACE satellites showed groundwater in north-west India being pumped faster than rain refills it (Rodell et al. 2009). They weigh every kind of stored water at once.",
     expert:
-      "Planned: GRACE and GRACE-FO JPL mascon terrestrial water storage anomalies (Watkins et al. 2015), monthly from 2002 at about 3° effective resolution, with a gap of about a year between the two missions in 2017 and 2018.",
+      "GRACE and GRACE-FO JPL mascon terrestrial water storage anomalies RL06.3 (Watkins et al. 2015), monthly on a 0.5° grid with about 3° effective resolution. Annual means need 8 of 12 months; 2017 and 2018 are missing because of the gap between the two missions. Ice-sheet mass loss dominates Greenland and Antarctica, and earthquakes such as Sumatra 2004 leave gravity signals that are not water.",
     units: "cm water equivalent",
     unitsLabel: "cm",
     decimals: 2,
@@ -628,9 +628,9 @@ export const VARIABLES: Record<VarId, VariableInfo> = {
       url: "https://doi.org/10.1002/2014JB011547",
     },
     landscapes: ["farmland", "desert", "monsoon"],
-    available: false,
+    available: true,
     annualStat: "mean",
-    firstYear: 2002,
+    firstYear: 2003,
     sourceIds: ["watkins2015", "rodell2009"],
   },
   no2: {

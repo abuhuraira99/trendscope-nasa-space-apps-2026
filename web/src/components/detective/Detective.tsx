@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Search as SearchIcon } from "lucide-react";
 import { VARIABLES, variablesFor, type Landscape, type VarId } from "../../content/variables";
 import { cellIndex, loadTrend, type VarMeta } from "../../lib/data/grids";
-import { info, type Sphere } from "../../lib/catalog";
+import { info, type Sphere, slopeScaleFor } from "../../lib/catalog";
 import { rampColor } from "../../lib/color/ramps";
 import { coord, pValue, signed } from "../../lib/format";
 import { useAtlas } from "../../state/store";
@@ -47,9 +47,7 @@ interface Finding {
   sig: number;
 }
 
-function slopeScale(m: VarMeta) {
-  return Math.max(Math.abs(m.slopeRange[0]), Math.abs(m.slopeRange[1])) || 1;
-}
+const slopeScale = slopeScaleFor;
 
 export default function Detective({ metas, onDone }: { metas: VarMeta[]; onDone: () => void }) {
   const [theme, setTheme] = useState<Theme | null>(null);

@@ -3,7 +3,7 @@ import { X, Download, Link2, Globe2 } from "lucide-react";
 import { useAtlas, type Place } from "../../state/store";
 import { cellIndex, cellSeries, loadSeries, loadTrend, type TrendGrid, type VarMeta } from "../../lib/data/grids";
 import { fetchPowerPoint, type PowerPointResult } from "../../lib/data/power";
-import { info } from "../../lib/catalog";
+import { info, slopeScaleFor } from "../../lib/catalog";
 import { reverseName } from "../../lib/geocode";
 import { analyzeAnnual, analyzeMonthly, deseasonalize, type AnnualResult, type MonthlyAnalysis } from "../../lib/stats";
 import { rampColor } from "../../lib/color/ramps";
@@ -29,9 +29,7 @@ interface ScanRow {
 
 const PAIRS: Record<string, string> = { t2m: "gistemp", gistemp: "t2m", precip: "gpcp", gpcp: "precip" };
 
-function slopeScale(m: VarMeta) {
-  return Math.max(Math.abs(m.slopeRange[0]), Math.abs(m.slopeRange[1])) || 1;
-}
+const slopeScale = slopeScaleFor;
 
 export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlobe }: Props) {
   const focusVar = useAtlas((s) => s.focusVar) ?? globeVar;

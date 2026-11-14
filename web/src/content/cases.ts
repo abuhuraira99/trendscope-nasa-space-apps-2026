@@ -106,7 +106,7 @@ export const CASES: CaseFile[] = [
     place: "Lahore, Punjab, Pakistan",
     lat: 31.55,
     lon: 74.34,
-    variables: ["t2mwet", "t2m", "t2m_max", "cdd", "gistemp"],
+    variables: ["t2mwet", "t2m", "t2m_max", "cdd", "gistemp", "tws"],
     compareWith: { place: "Jacobabad, Sindh, Pakistan", lat: 28.28, lon: 68.44 },
     steps: [
       {
@@ -128,6 +128,11 @@ export const CASES: CaseFile[] = [
         title: "Suspect one: irrigation",
         body: "Punjab's fields are heavily irrigated, and studies of India find that irrigation cools the land surface while adding moisture to the air (Mishra et al. 2020). Across most of India, aerosols and irrigation have held back the hottest daytime temperatures while wet-bulb measures kept climbing (van Oldenborgh et al. 2018). For daytime highs here the verdict is {verdict}, at {slope} per decade.",
         focus: { variable: "t2m_max", lat: 31.55, lon: 74.34, zoom: 4 },
+      },
+      {
+        title: "What the irrigation costs underground",
+        body: "The GRACE satellites weigh the water stored on land by measuring tiny changes in Earth's gravity. Under this part of Punjab the verdict is {verdict}, at {slope} per decade (p = {p}). Rodell et al. (2009) used GRACE to show that groundwater pumped for irrigation in north-west India was not being replaced, the same water that keeps these fields and their air humid.",
+        focus: { variable: "tws", lat: 30.25, lon: 74.25, zoom: 3 },
       },
       {
         title: "Ask the weather stations",
@@ -156,6 +161,7 @@ export const CASES: CaseFile[] = [
       { label: "Zachariah et al. 2023, Environmental Research: Climate: the 2022 India and Pakistan heatwave", url: doi("10.1088/2752-5295/acf4b6") },
       { label: "NCAR Climate Data Guide: NASA's MERRA-2 reanalysis", url: "https://climatedataguide.ucar.edu/climate-data/nasas-merra2-reanalysis" },
       { label: "Weatherhead et al. 1998, JGR: factors affecting the detection of trends", url: doi("10.1029/98JD00995") },
+      { label: "Rodell, Velicogna and Famiglietti 2009, Nature: satellite estimates of groundwater depletion in India", url: doi("10.1038/nature08238") },
     ],
     teaches: ["limits", "change-points", "seasons"],
     landscapes: ["megacity", "farmland", "monsoon"],

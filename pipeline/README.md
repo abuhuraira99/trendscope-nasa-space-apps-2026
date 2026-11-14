@@ -186,6 +186,13 @@ so 2002 is incomplete and left out, as is the current year. 2017 and 2018 have o
 and stay missing in the series (all cells -32768); the trend test keeps every other year in its real
 place in time. Two months have two solutions each (January 2012 and April 2015); they are averaged.
 
+The ice sheets dominate the `tws` numbers: slopes there reach hundreds of cm per decade, so the
+`slopeRange` (p2 to p98, about -94 to +22) is much wider than on the rest of the land (about -28 to
++15). Two of the automatic `extremes` are not water: the top rise, about +600 cm per decade on the
+Amundsen Sea coast near 73 S 103 W, is a small coastal mascon patch next to the real losses of
+about -590 and probably an artefact of the solution; the rise at 4.75 N 95.75 E is the gravity signal
+of the 2004 Sumatra earthquake.
+
 **`ndvi`, vegetation greenness.** MODIS Terra MOD13C2 v061, monthly NDVI on the 0.05 degree grid,
 2001 to 2025. Each monthly file is about 95 MB, so the script asks NASA's cloud OPeNDAP server
 (Hyrax) for every 20th row and column only, starting at index 10: one native pixel near the centre

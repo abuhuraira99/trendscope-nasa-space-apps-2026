@@ -32,7 +32,7 @@ like a trend.
 
 | The challenge asks to | TrendScope |
 |---|---|
-| Select variables measured by missions or produced by models | 18 NASA variables in five groups: heat, water, ice, air and plants. Each has a plain-language definition and an expert note |
+| Select variables measured by missions or produced by models | 19 NASA variables in five groups: heat, water, ice, air and plants. Each has a plain-language definition and an expert note |
 | Acquire them for a region | Every 1° cell on Earth is preprocessed, and any point can be pulled live from NASA POWER in the browser |
 | Visualize the time series | An interactive globe of trends, a year-by-year time-lapse, and a chart for every place with its trend line and 95% range |
 | Measure the rate of change | Sen slope per decade with a Gilbert confidence interval, plus a least-squares fit |

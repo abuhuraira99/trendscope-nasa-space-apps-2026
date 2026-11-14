@@ -7,7 +7,7 @@ import { CASE_BY_ID, CASES, fillPlaceholders, zoomToDistance, type CaseFile as C
 import { useTrendGrid, useVarsFile } from "../lib/data/hooks";
 import { cellIndex, cellSeries, loadSeries, type VarMeta } from "../lib/data/grids";
 import { analyzeAnnual, type AnnualResult } from "../lib/stats";
-import { info } from "../lib/catalog";
+import { info, slopeScaleFor } from "../lib/catalog";
 import { rampColor } from "../lib/color/ramps";
 import { pValue, signed } from "../lib/format";
 import { angularDistance } from "../components/globe/geo";
@@ -27,9 +27,7 @@ async function analyzeAt(meta: VarMeta, lat: number, lon: number): Promise<Point
   return { years, values, res: analyzeAnnual(years, values) };
 }
 
-function slopeScale(m: VarMeta) {
-  return Math.max(Math.abs(m.slopeRange[0]), Math.abs(m.slopeRange[1])) || 1;
-}
+const slopeScale = slopeScaleFor;
 
 function words(varId: string, r: AnnualResult | undefined) {
   const v = info(varId);

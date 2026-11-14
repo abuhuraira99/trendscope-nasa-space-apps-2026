@@ -101,7 +101,7 @@ CHECK_POINTS = {
         ("NW India / Punjab", 29.0, 75.0),
         ("Middle East, NW Iran / N Iraq", 34.5, 47.0),
         ("Middle East, Caspian / N Iran", 37.0, 52.0),
-        ("Greenland SE", 65.0, -40.0),
+        ("Greenland SE", 65.5, -41.5),
         ("Greenland NW", 77.0, -60.0),
         ("West Antarctica, Amundsen Sea", -76.0, -105.0),
         ("Upper Missouri", 47.0, -103.0),

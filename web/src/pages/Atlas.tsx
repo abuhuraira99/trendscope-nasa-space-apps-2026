@@ -6,7 +6,7 @@ import Globe, { type GlobeArc, type GlobeField, type GlobePin } from "../compone
 import { useAtlas } from "../state/store";
 import { useSeriesGrid, useTrendGrid, useVarsFile } from "../lib/data/hooks";
 import { cellIndex, type VarMeta } from "../lib/data/grids";
-import { info, SPHERES } from "../lib/catalog";
+import { info, SPHERES, slopeScaleFor } from "../lib/catalog";
 import { rampCss } from "../lib/color/ramps";
 import { coord, fmt, pct, signed } from "../lib/format";
 import Inspector from "../components/inspector/Inspector";
@@ -16,11 +16,7 @@ import { searchPlaces } from "../lib/geocode";
 import "./atlas.css";
 import "./atlas-extra.css";
 
-function slopeScale(m: VarMeta) {
-  const [a, b] = m.slopeRange;
-  const s = Math.max(Math.abs(a), Math.abs(b));
-  return s > 0 ? s : 1;
-}
+const slopeScale = slopeScaleFor;
 
 export default function Atlas() {
   const vars = useVarsFile();
@@ -129,7 +125,7 @@ export default function Atlas() {
     }
   }, [mode, anomalies, year, setYear]);
 
-  const bestPair = useMemo(() => (meta ? pickTwins(meta) : null), [meta]);
+  const bestPair = useMemo(() => (meta && !info(meta.id).noTwins ? pickTwins(meta) : null), [meta]);
   const twinPair = twins ? bestPair : null;
   const pins: GlobePin[] = place ? [{ id: "place", lat: place.lat, lon: place.lon }] : [];
   if (twinPair) {
