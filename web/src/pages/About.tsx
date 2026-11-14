@@ -1,3 +1,4 @@
+import { Play } from "lucide-react";
 import { Link } from "react-router-dom";
 import "../styles/page.css";
 import "./about.css";
@@ -20,6 +21,10 @@ export default function About() {
             TrendScope is team TrendScope's answer to the NASA Space Apps Challenge 2026 challenge "Be An Earth System Trend Detective!".
             It helps anyone find variables that are changing, see where and how fast, and test whether the change is statistically real.
           </p>
+          <Link to="/demo" className="btn btn-quiet about-demo">
+            <Play size={15} aria-hidden="true" />
+            Watch the 30-second demo
+          </Link>
         </header>
 
         <section className="page-section" aria-labelledby="what-h">

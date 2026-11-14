@@ -28,6 +28,10 @@
   font-size: var(--t-14);
 }
 
+.about-demo {
+  margin-top: 20px;
+}
+
 .si-note {
   font-size: var(--t-14);
   color: var(--ink-3);
