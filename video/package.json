@@ -1,0 +1,27 @@
+{
+  "name": "trendscope-video",
+  "private": true,
+  "version": "1.0.0",
+  "description": "30-second demo video for TrendScope, recorded from the live app and rendered with Remotion in GitHub Actions",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "record": "node record/record.mjs",
+    "music": "node scripts/make-music.mjs public/music.wav",
+    "render": "remotion render src/index.ts TrendScopeDemo out/trendscope-demo.mp4 --props=public/footage/manifest.json --codec=h264 --crf=18"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "@remotion/google-fonts": "4.0.543",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remotion": "4.0.543"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "playwright": "1.65.1",
+    "typescript": "~7.0.2"
+  }
+}
