@@ -7,7 +7,7 @@
 A global atlas of statistically tested trends in NASA Earth data, built for the
 [2026 NASA Space Apps Challenge](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/).
 
-**[Open the live app → trendscope-earth.pages.dev](https://trendscope-earth.pages.dev)**
+**[Open the live app → trendscope-earth.pages.dev](https://trendscope-earth.pages.dev)** · [Watch the 30-second demo](https://trendscope-earth.pages.dev/demo)
 
 [![CI](https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026/actions/workflows/ci.yml/badge.svg)](https://github.com/abuhuraira99/trendscope-nasa-space-apps-2026/actions/workflows/ci.yml)
 [![NASA Space Apps 2026](https://img.shields.io/badge/NASA%20Space%20Apps-2026-0B3D91)](https://www.spaceappschallenge.org/2026/challenges/earth-system-trend-detective/)
@@ -147,6 +147,8 @@ rebuild the data, see [pipeline/README.md](pipeline/README.md).
 │   └── public/data/         Precomputed global trend grids
 ├── pipeline/                NASA data download and grid building
 ├── src/trendscope/analysis/ Vectorized trend statistics in Python (+ tests)
+├── src/trendscope/data/     NASA POWER client, regions and cache for scripts (+ tests)
+├── video/                   The 30-second demo video, rendered in GitHub Actions
 └── docs/                    Build specification, architecture and team docs
 ```
 
