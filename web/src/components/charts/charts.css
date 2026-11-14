@@ -93,3 +93,162 @@
 .season-zero {
   stroke: var(--line-strong);
 }
+
+/* Trend by calendar month: readout, columns, tap or hover targets */
+.sbars {
+  margin: 0;
+  width: 100%;
+}
+
+.sbars-readout {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.sbars-month {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-14);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sbars-tag {
+  padding: 1px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: var(--t-11);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.sbars-value {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.sbars-num {
+  font-family: var(--mono);
+  font-size: var(--t-24);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.sbars-unit {
+  font-size: var(--t-13);
+  color: var(--ink-2);
+}
+
+.sbars-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+  font-size: var(--t-12);
+  color: var(--ink-2);
+}
+
+.sbars-swatch {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.sbars-swatch.is-solid {
+  background: var(--c);
+}
+
+.sbars-swatch.is-hatched {
+  background:
+    repeating-linear-gradient(135deg, color-mix(in oklab, var(--c) 80%, transparent) 0 1.5px, transparent 1.5px 4px),
+    color-mix(in oklab, var(--c) 14%, transparent);
+}
+
+.sbars-plot {
+  position: relative;
+}
+
+.sbars-plot svg {
+  display: block;
+  overflow: visible;
+}
+
+.sbars-sel {
+  fill: color-mix(in oklab, var(--ink) 7%, transparent);
+  transition: transform 260ms var(--ease);
+}
+
+.season-label.is-active {
+  fill: var(--ink);
+  font-weight: 600;
+}
+
+.sbars-bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sbars-grow 640ms var(--ease) both;
+}
+
+.sbars-bar.is-neg {
+  transform-origin: 50% 0%;
+}
+
+@keyframes sbars-grow {
+  from {
+    transform: scaleY(0.001);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.sbars-hits {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.sbars-hit {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sbars-hit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+}
+
+.sbars-summary {
+  margin-top: 12px;
+  font-size: var(--t-13);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sbars-bar {
+    animation: none;
+  }
+
+  .sbars-sel {
+    transition: none;
+  }
+}

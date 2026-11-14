@@ -331,8 +331,9 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
                 />
                 {monthly.seasonal.ok && (
                   <p className="insp-caption">
-                    Seasonal Mann-Kendall test across all 12 months: {pEq(monthly.seasonal.p)}. Filled bars are months with a
-                    significant trend on their own. Live monthly data from NASA POWER at this exact point.
+                    Seasonal Mann-Kendall test across all 12 months: {pEq(monthly.seasonal.p)}. Solid bars are months with a
+                    significant trend on their own; hatched bars could be chance. Tap or point at a month to read it. Live monthly
+                    data from NASA POWER at this exact point.
                   </p>
                 )}
               </>
