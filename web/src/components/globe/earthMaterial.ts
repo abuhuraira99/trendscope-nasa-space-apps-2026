@@ -42,9 +42,14 @@ export const earthFragment = /* glsl */ `
   vec4 layer(sampler2D data, sampler2D ramp, vec4 g, vec2 g2, float lat, float lon, out float alpha) {
     vec4 d = texture2D(data, gridUv(g, g2, lat, lon));
     float valid = smoothstep(0.35, 0.65, d.b);
-    float sig = d.g;
-    float strength = sig > 0.75 ? 1.0 : (sig > 0.25 ? 0.5 : 0.22);
-    strength = mix(strength, sig > 0.75 ? 1.0 : 0.0, uSigOnly);
+    // 1 where the trend passes the false discovery test, fading smoothly at the edges.
+    float strong = smoothstep(0.62, 0.9, d.g);
+    // Diagonal hatching marks places where the change could be chance (the convention of
+    // scientific trend maps). Screen-space so the lines stay crisp at every zoom.
+    float hatch = step(0.62, fract((gl_FragCoord.x - gl_FragCoord.y) / 7.0));
+    float weak = 0.18 + 0.3 * hatch;
+    float strength = mix(weak, 1.0, strong);
+    strength = mix(strength, strong, uSigOnly);
     alpha = valid * strength;
     return vec4(texture2D(ramp, vec2(d.r, 0.5)).rgb, 1.0);
   }

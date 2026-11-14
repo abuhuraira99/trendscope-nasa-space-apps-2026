@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Minus, Plus, LocateFixed, Pause, Play } from "lucide-react";
-import Globe, { type GlobeField, type GlobePin } from "../components/globe/Globe";
+import { Minus, Plus, LocateFixed, Pause, Play, Split, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import Detective from "../components/detective/Detective";
+import Globe, { type GlobeArc, type GlobeField, type GlobePin } from "../components/globe/Globe";
 import { useAtlas } from "../state/store";
 import { useSeriesGrid, useTrendGrid, useVarsFile } from "../lib/data/hooks";
 import { cellIndex, type VarMeta } from "../lib/data/grids";
@@ -10,6 +12,7 @@ import { coord, fmt, pct, signed } from "../lib/format";
 import Inspector from "../components/inspector/Inspector";
 import SearchBox from "../components/SearchBox";
 import "./atlas.css";
+import "./atlas-extra.css";
 
 function slopeScale(m: VarMeta) {
   const [a, b] = m.slopeRange;
@@ -28,6 +31,8 @@ export default function Atlas() {
   const series = useSeriesGrid(meta, mode === "year");
   const searchRef = useRef<HTMLInputElement>(null);
   const [hover, setHover] = useState<{ lat: number; lon: number } | null>(null);
+  const [tab, setTab] = useState<"explore" | "detective">("explore");
+  const [twins, setTwins] = useState(false);
 
   // Keep the selected variable valid once the catalogue loads.
   useEffect(() => {
@@ -96,7 +101,14 @@ export default function Atlas() {
     }
   }, [mode, anomalies, year, setYear]);
 
+  const bestPair = useMemo(() => (meta ? pickTwins(meta) : null), [meta]);
+  const twinPair = twins ? bestPair : null;
   const pins: GlobePin[] = place ? [{ id: "place", lat: place.lat, lon: place.lon }] : [];
+  if (twinPair) {
+    pins.push({ id: "twin-up", lat: twinPair.up.lat, lon: twinPair.up.lon });
+    pins.push({ id: "twin-down", lat: twinPair.down.lat, lon: twinPair.down.lon, tone: "secondary" });
+  }
+  const arcs: GlobeArc[] = twinPair ? [{ from: twinPair.up, to: twinPair.down }] : [];
 
   const hoverReadout = useMemo(() => {
     if (!hover || !meta || trend.status !== "ready") return null;
@@ -121,16 +133,25 @@ export default function Atlas() {
             {vars.status === "ready" ? `${vars.data.period[1] - vars.data.period[0] + 1} years` : "Decades"} of NASA satellite and model
             data, tested for real trends at every place on the planet.
           </p>
-          <div className="rail-actions">
-            <button className="btn btn-primary" type="button" onClick={() => searchRef.current?.focus()}>
-              Investigate a place
-            </button>
-            <a className="btn btn-quiet" href="/cases">
-              Open a case file
-            </a>
-          </div>
+          <p className="rail-more">
+            New here? Try <Link to="/cases/lahore-humid-heat">a guided case file</Link> or switch to detective mode below.
+          </p>
         </div>
 
+        <div className="rail-tabs" role="tablist" aria-label="Mode">
+          <button type="button" role="tab" aria-selected={tab === "explore"} onClick={() => setTab("explore")}>
+            Explore the maps
+          </button>
+          <button type="button" role="tab" aria-selected={tab === "detective"} onClick={() => setTab("detective")}>
+            Detective mode
+          </button>
+        </div>
+
+        {tab === "detective" ? (
+          <div className="var-list">
+            <Detective metas={metas} onDone={() => setTab("explore")} />
+          </div>
+        ) : (
         <nav className="var-list" aria-label="Choose what the globe shows">
           {SPHERES.map((sp) => {
             const items = metas.filter((m) => info(m.id).sphere === sp.id);
@@ -154,7 +175,9 @@ export default function Atlas() {
                           onClick={() => setVar(m.id)}
                         >
                           <span className="var-swatch" style={{ background: rampCss(v.ramp) }} aria-hidden />
-                          <span className="var-name">{v.name}</span>
+                          <span className="var-name" title={v.name}>
+                            {v.name}
+                          </span>
                           <span className="var-stat">
                             <span className="num">{pct(share)}</span> {dominantUp ? v.increaseWord : v.decreaseWord}
                           </span>
@@ -169,6 +192,7 @@ export default function Atlas() {
           {vars.status === "loading" && <RailSkeleton />}
           {vars.status === "error" && <p className="rail-error">The trend maps could not load. Reload the page to try again.</p>}
         </nav>
+        )}
 
         <label className="sig-toggle">
           <input type="checkbox" checked={sigOnly} onChange={(e) => setSigOnly(e.target.checked)} />
@@ -198,7 +222,8 @@ export default function Atlas() {
           view={view}
           viewNonce={viewNonce}
           pins={pins}
-          idleSpin={!place}
+          arcs={arcs}
+          idleSpin={!place && !twins}
           onPick={onPick}
           onHover={setHover}
         />
@@ -243,6 +268,24 @@ export default function Atlas() {
               <span>{vi.decreaseWord}</span>
               <span>{vi.increaseWord}</span>
             </div>
+            {mode === "trend" && bestPair && (
+              <button
+                type="button"
+                className="legend-twins"
+                aria-pressed={twins}
+                onClick={() => {
+                  const next = !twins;
+                  setTwins(next);
+                  if (next && bestPair) {
+                    const u = bestPair.up;
+                    const d = bestPair.down;
+                    flyTo((u.lat + d.lat) / 2, midLon(u.lon, d.lon), angular(u, d) > 70 ? 5.2 : 4.4);
+                  }
+                }}
+              >
+                <Split size={14} strokeWidth={1.75} /> {twins ? "Hide opposite fates" : "Show opposite fates"}
+              </button>
+            )}
             {mode === "trend" && (
               <div className="legend-sig">
                 <span className="sig-key sig-key-solid" /> passes false discovery test
@@ -313,8 +356,44 @@ export default function Atlas() {
           </div>
         )}
 
-        {!place && (
-          <p className="stage-hint">Click anywhere on Earth to investigate it</p>
+        {!place && !twinPair && <p className="stage-hint">Click anywhere on Earth to investigate it</p>}
+
+        {twinPair && meta && (
+          <div className="twins" role="region" aria-label="Opposite fates">
+            <div className="twins-head">
+              <strong>Same planet, opposite fates</strong>
+              <button className="icon-btn" type="button" aria-label="Close" onClick={() => setTwins(false)}>
+                <X size={16} strokeWidth={1.75} />
+              </button>
+            </div>
+            <p>
+              The strongest significant trends in {vi.name.toLowerCase()} point in opposite directions{" "}
+              {Math.round(angular(twinPair.up, twinPair.down))}° apart. The same warming planet can push one place up and another down.
+            </p>
+            {[
+              { e: twinPair.up, word: vi.increaseWord },
+              { e: twinPair.down, word: vi.decreaseWord },
+            ].map(({ e, word }) => (
+              <button
+                key={`${e.lat},${e.lon}`}
+                type="button"
+                className="twin-row"
+                onClick={() => {
+                  setTwins(false);
+                  pick({ lat: e.lat, lon: e.lon });
+                  flyTo(e.lat, e.lon, 2.7);
+                }}
+              >
+                <span className="num">{coord(e.lat, e.lon)}</span>
+                <span>
+                  <strong className="num">
+                    {signed(e.slope, vi.decimals)} {vi.unitsLabel}
+                  </strong>{" "}
+                  per decade, {word}
+                </span>
+              </button>
+            ))}
+          </div>
         )}
       </main>
 
@@ -339,4 +418,32 @@ function RailSkeleton() {
       ))}
     </div>
   );
+}
+
+function midLon(a: number, b: number) {
+  let d = b - a;
+  if (d > 180) d -= 360;
+  if (d < -180) d += 360;
+  return a + d / 2;
+}
+
+function angular(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
+  const r = Math.PI / 180;
+  const c = Math.sin(a.lat * r) * Math.sin(b.lat * r) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.cos((a.lon - b.lon) * r);
+  return Math.acos(Math.max(-1, Math.min(1, c))) / r;
+}
+
+/** The pair of opposite significant extremes with the strongest combined contrast, at least 40 degrees apart. */
+function pickTwins(m: VarMeta) {
+  const ups = m.extremes?.up ?? [];
+  const downs = m.extremes?.down ?? [];
+  let best: { up: (typeof ups)[number]; down: (typeof downs)[number]; score: number } | null = null;
+  for (const u of ups) {
+    for (const d of downs) {
+      if (angular(u, d) < 40) continue;
+      const score = Math.abs(u.slope) + Math.abs(d.slope);
+      if (!best || score > best.score) best = { up: u, down: d, score };
+    }
+  }
+  return best ? { up: best.up, down: best.down } : null;
 }
