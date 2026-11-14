@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { scaleLinear } from "d3-scale";
 import { line } from "d3-shape";
 import { fmt } from "../../lib/format";
@@ -39,22 +39,17 @@ export default function TrendChart({
   const ref = useRef<HTMLDivElement>(null);
   const width = useElementWidth(ref, 420);
   const [hover, setHover] = useState<number | null>(null);
+  const clipId = useId();
 
   const geo = useMemo(() => {
     const pts = years.map((y, i) => ({ y, v: values[i] })).filter((p): p is { y: number; v: number } => p.v !== null && Number.isFinite(p.v));
     let lo = Math.min(...pts.map((p) => p.v));
     let hi = Math.max(...pts.map((p) => p.v));
-    if (monthly?.length) {
-      for (const m of monthly) {
-        lo = Math.min(lo, m.v + monthlyOffset);
-        hi = Math.max(hi, m.v + monthlyOffset);
-      }
-    }
     if (!Number.isFinite(lo) || !Number.isFinite(hi)) {
       lo = 0;
       hi = 1;
     }
-    const pad = (hi - lo || Math.abs(hi) || 1) * 0.12;
+    const pad = (hi - lo || Math.abs(hi) || 1) * (monthly?.length ? 0.3 : 0.12);
     const x = scaleLinear()
       .domain([years[0], years[years.length - 1]])
       .range([M.left, width - M.right]);
@@ -63,7 +58,7 @@ export default function TrendChart({
       .range([height - M.bottom, M.top])
       .nice(5);
     return { pts, x, y };
-  }, [years, values, width, height, monthly, monthlyOffset]);
+  }, [years, values, width, height, monthly]);
 
   const { pts, x, y } = geo;
   const path = line<{ y: number; v: number }>()
@@ -137,7 +132,12 @@ export default function TrendChart({
           ))}
         </g>
         {band && <path d={band} className="chart-band" style={{ fill: color }} />}
-        {monthlyPath && <path d={monthlyPath} className="chart-monthly" />}
+        <defs>
+          <clipPath id={clipId}>
+            <rect x={M.left} y={M.top} width={Math.max(0, width - M.left - M.right)} height={Math.max(0, height - M.top - M.bottom)} />
+          </clipPath>
+        </defs>
+        {monthlyPath && <path d={monthlyPath} className="chart-monthly" clipPath={`url(#${clipId})`} />}
         {path && <path d={path} className="chart-line" />}
         {pts.map((p) => (
           <circle key={p.y} cx={x(p.y)} cy={y(p.v)} r={2.4} className="chart-dot" />

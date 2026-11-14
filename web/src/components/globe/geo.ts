@@ -2,8 +2,6 @@ import * as THREE from "three";
 import { feature, mesh } from "topojson-client";
 import { geoEquirectangular, geoGraticule10, geoPath } from "d3-geo";
 import type { Topology, GeometryCollection } from "topojson-specification";
-import landTopo from "world-atlas/land-50m.json";
-import countriesTopo from "world-atlas/countries-110m.json";
 
 const DEG = Math.PI / 180;
 
@@ -53,17 +51,31 @@ function multiLines(geom: GeoJSON.Geometry | null): LineCoords {
   return [];
 }
 
-let cached: {
+export interface GlobeLayers {
   coast: THREE.BufferGeometry;
   borders: THREE.BufferGeometry;
   graticule: THREE.BufferGeometry;
   land: THREE.CanvasTexture;
-} | null = null;
+}
 
-export function globeLayers() {
-  if (cached) return cached;
-  const land = landTopo as unknown as Topology;
-  const countries = countriesTopo as unknown as Topology;
+let cached: Promise<GlobeLayers> | null = null;
+
+/** Coastlines, borders and the land mask, fetched once (Natural Earth via world-atlas). */
+export function loadGlobeLayers(): Promise<GlobeLayers> {
+  if (!cached) {
+    const base = import.meta.env.BASE_URL;
+    cached = Promise.all([
+      fetch(`${base}geo/land-50m.json`).then((r) => r.json()),
+      fetch(`${base}geo/countries-110m.json`).then((r) => r.json()),
+    ]).then(([l, c]) => buildLayers(l as Topology, c as Topology));
+    cached.catch(() => {
+      cached = null;
+    });
+  }
+  return cached;
+}
+
+function buildLayers(land: Topology, countries: Topology): GlobeLayers {
   const coastGeom = mesh(land, land.objects.land as GeometryCollection);
   const borderGeom = mesh(
     countries,
@@ -102,13 +114,12 @@ export function globeLayers() {
   tex.wrapS = THREE.RepeatWrapping;
   tex.anisotropy = 4;
 
-  cached = {
+  return {
     coast: linesToGeometry(multiLines(coastGeom), 1.0015),
     borders: linesToGeometry(multiLines(borderGeom), 1.0015),
     graticule: linesToGeometry(gratLines, 1.001),
     land: tex,
   };
-  return cached;
 }
 
 /** Great-circle distance in degrees. */

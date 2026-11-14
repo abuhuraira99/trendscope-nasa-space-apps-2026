@@ -1,7 +1,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { globeLayers, latLonToVec3, vec3ToLatLon } from "./geo";
+import { loadGlobeLayers, latLonToVec3, vec3ToLatLon, type GlobeLayers } from "./geo";
 import { createEarthMaterial } from "./earthMaterial";
 import { packField, rampTexture } from "./dataTexture";
 import type { GridGeom } from "../../lib/data/grids";
@@ -68,17 +68,32 @@ function Earth({
   onViewChange,
   onHover,
 }: Omit<GlobeProps, "className" | "label" | "shiftX" | "shiftY">) {
-  const layers = useMemo(() => globeLayers(), []);
-  const material = useMemo(() => createEarthMaterial(layers.land), [layers]);
+  const [layers, setLayers] = useState<GlobeLayers | null>(null);
+  const material = useMemo(() => {
+    const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1);
+    blank.needsUpdate = true;
+    return createEarthMaterial(blank);
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    loadGlobeLayers().then((l) => {
+      if (!alive) return;
+      material.uniforms.uLand.value = l.land;
+      setLayers(l);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [material]);
   const group = useRef<THREE.Group>(null);
   const mesh = useRef<THREE.Mesh>(null);
   const { camera, gl } = useThree();
 
   // Orientation state, animated toward the target.
   const st = useRef({
-    lat: view.lat,
-    lon: view.lon,
-    dist: view.distance,
+    lat: view.lat - 8,
+    lon: view.lon + 40,
+    dist: view.distance * 2.4,
     tLat: view.lat,
     tLon: view.lon,
     tDist: view.distance,
@@ -266,6 +281,8 @@ function Earth({
       >
         <sphereGeometry args={[1, 256, 128]} />
       </mesh>
+      {layers && (
+        <>
       <lineSegments geometry={layers.graticule}>
         <lineBasicMaterial color="#ece8e1" transparent opacity={0.06} depthWrite={false} />
       </lineSegments>
@@ -275,6 +292,8 @@ function Earth({
       <lineSegments geometry={layers.borders}>
         <lineBasicMaterial color="#ece8e1" transparent opacity={0.12} depthWrite={false} />
       </lineSegments>
+        </>
+      )}
       {pins?.map((p) => <Pin key={p.id} pin={p} />)}
       {arcs?.map((a, i) => <Arc key={i} arc={a} />)}
     </group>

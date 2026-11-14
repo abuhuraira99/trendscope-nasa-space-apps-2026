@@ -149,3 +149,31 @@
 .rail-more a {
   color: var(--ink-2);
 }
+
+@media (max-width: 820px) {
+  .ruler,
+  .legend-words,
+  .legend-twins,
+  .legend-title span {
+    display: none;
+  }
+
+  .legend {
+    padding: 10px 12px 8px;
+  }
+
+  .legend-title {
+    margin-bottom: 8px;
+  }
+
+  .stage-tools {
+    top: auto;
+    bottom: 96px;
+    right: 12px;
+    transform: none;
+  }
+
+  .rail h1 {
+    font-size: var(--t-32);
+  }
+}
