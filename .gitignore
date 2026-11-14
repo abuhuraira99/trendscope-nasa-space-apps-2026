@@ -33,3 +33,9 @@ web/dist/
 video/out/
 .cache_fetch*.log
 .cache_*.log
+
+# Demo video (rendered in GitHub Actions)
+video/node_modules/
+video/out/
+video/public/footage/
+video/public/music.wav
