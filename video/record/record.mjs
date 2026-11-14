@@ -246,17 +246,30 @@ async function recordGlobe(browser) {
 // Clip 2: the app itself. Switch variables, apply the false discovery filter, search Lahore,
 // read the verdict, then scroll to the scan of every other variable.
 async function rowCenter(page, names) {
-  for (const name of names) {
-    const box = await page.evaluate((name) => {
-      const rows = [...document.querySelectorAll("button.var-row")];
-      const row = rows.find((b) => (b.querySelector(".var-name")?.textContent ?? b.innerText).trim() === name);
-      if (!row) return null;
-      row.scrollIntoView({ block: "nearest", behavior: "instant" });
-      const r = row.getBoundingClientRect();
-      const label = row.querySelector(".var-name")?.getBoundingClientRect() ?? r;
-      return { x: label.x + Math.min(label.width, 160) * 0.55, y: r.y + r.height / 2, name };
-    }, name);
-    if (box) return box;
+  // Prefer a row that is already fully in view, so the rail never jumps; scroll only as a fallback.
+  for (const allowScroll of [false, true]) {
+    for (const name of names) {
+      const box = await page.evaluate(
+        ({ name, allowScroll }) => {
+          const rows = [...document.querySelectorAll("button.var-row")];
+          const row = rows.find((b) => (b.querySelector(".var-name")?.textContent ?? b.innerText).trim() === name);
+          if (!row) return null;
+          const list = row.closest(".var-list") ?? row.parentElement;
+          const lr = list.getBoundingClientRect();
+          let r = row.getBoundingClientRect();
+          const inView = r.top >= lr.top && r.bottom <= lr.bottom && r.bottom <= window.innerHeight;
+          if (!inView) {
+            if (!allowScroll) return null;
+            row.scrollIntoView({ block: "nearest", behavior: "instant" });
+            r = row.getBoundingClientRect();
+          }
+          const label = row.querySelector(".var-name")?.getBoundingClientRect() ?? r;
+          return { x: label.x + Math.min(label.width, 160) * 0.55, y: label.y + label.height / 2, name };
+        },
+        { name, allowScroll },
+      );
+      if (box) return box;
+    }
   }
   return null;
 }
@@ -290,7 +303,7 @@ async function recordApp(browser) {
 
   // 1. Switch variables (all on the same MERRA-2 grid, so the globe crossfades cleanly).
   const plan = [
-    { names: ["Precipitable water", "Water vapour in the air", "Root-zone soil wetness"], clickAt: 1.1 },
+    { names: ["Precipitable water", "Land evaporation", "Root-zone soil wetness"], clickAt: 1.1 },
     { names: ["Precipitation"], clickAt: 2.15 },
     { names: ["Wet-bulb temperature"], clickAt: 3.1, required: true },
   ];
