@@ -1,0 +1,40 @@
+.team {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--line);
+}
+
+.team li {
+  display: grid;
+  gap: 4px;
+  padding: 18px 20px;
+  background: var(--ground);
+}
+
+.team strong {
+  font-size: var(--t-17);
+  font-weight: 600;
+}
+
+.team span {
+  color: var(--ink-2);
+  font-size: var(--t-14);
+}
+
+.si-note {
+  font-size: var(--t-14);
+  color: var(--ink-3);
+}
+
+@media (max-width: 860px) {
+  .team {
+    grid-template-columns: 1fr;
+  }
+}

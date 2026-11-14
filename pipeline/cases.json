@@ -1,14 +1,118 @@
 [
   {
-    "id": "lahore-heat",
-    "lat": 31.52,
-    "lon": 74.36,
+    "id": "lahore-humid-heat",
+    "lat": 31.55,
+    "lon": 74.34,
     "params": [
+      "T2MWET",
       "T2M",
       "T2M_MAX_AVG",
+      "CDD18_3"
+    ]
+  },
+  {
+    "id": "lahore-humid-heat-b",
+    "lat": 28.28,
+    "lon": 68.44,
+    "params": [
       "T2MWET",
+      "T2M",
+      "T2M_MAX_AVG",
+      "CDD18_3"
+    ]
+  },
+  {
+    "id": "arctic-amplification",
+    "lat": 78,
+    "lon": 40,
+    "params": [
+      "T2M",
+      "FRSEAICE"
+    ]
+  },
+  {
+    "id": "arctic-amplification-b",
+    "lat": 0,
+    "lon": -25,
+    "params": [
+      "T2M",
+      "FRSEAICE"
+    ]
+  },
+  {
+    "id": "ozone-hole-window",
+    "lat": -65.25,
+    "lon": -64.25,
+    "params": [
+      "TO3"
+    ]
+  },
+  {
+    "id": "ozone-hole-window-b",
+    "lat": -54.8,
+    "lon": -68.3,
+    "params": [
+      "TO3"
+    ]
+  },
+  {
+    "id": "opposite-fates-rain",
+    "lat": 13.5,
+    "lon": 2.5,
+    "params": [
       "PRECTOTCORR",
       "GWETROOT"
+    ]
+  },
+  {
+    "id": "opposite-fates-rain-b",
+    "lat": -31.5,
+    "lon": 116.25,
+    "params": [
+      "PRECTOTCORR",
+      "GWETROOT"
+    ]
+  },
+  {
+    "id": "dimming-and-brightening",
+    "lat": 51,
+    "lon": 11.25,
+    "params": [
+      "AOD_55_ADJ",
+      "ALLSKY_SFC_SW_DWN",
+      "CLOUD_AMT"
+    ]
+  },
+  {
+    "id": "dimming-and-brightening-b",
+    "lat": 26.5,
+    "lon": 80.25,
+    "params": [
+      "AOD_55_ADJ",
+      "ALLSKY_SFC_SW_DWN",
+      "CLOUD_AMT"
+    ]
+  },
+  {
+    "id": "chile-megadrought",
+    "lat": -33.45,
+    "lon": -70.65,
+    "params": [
+      "PRECTOTCORR",
+      "GWETROOT",
+      "EVLAND",
+      "T2M"
+    ]
+  },
+  {
+    "id": "chile-megadrought-b",
+    "lat": 34.5,
+    "lon": -111.25,
+    "params": [
+      "PRECTOTCORR",
+      "GWETROOT",
+      "EVLAND",
+      "T2M"
     ]
   }
 ]

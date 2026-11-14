@@ -38,6 +38,10 @@ Raw downloads stay in `data/raw/`, which git ignores.
    .venv/Scripts/python.exe -I pipeline/fetch_power_zarr.py merra2:T2M merra2:PRECTOTCORR syn1deg:CLOUD_AMT
    ```
 
+   The app uses these 15: `merra2:` T2M, T2M_MAX_AVG, T2MWET, CDD18_3, PRECTOTCORR, GWETROOT,
+   EVLAND, TQV, FRSNO, FRSEAICE, TO3, WS10M, and `syn1deg:` AOD_55_ADJ, CLOUD_AMT,
+   ALLSKY_SFC_SW_DWN.
+
 2. Build the POWER grids. With no arguments it builds every variable whose download exists and
    skips the ones that are already up to date. Add ids to build only those, `--force` to rebuild,
    or `--list` to see what is downloaded and built.

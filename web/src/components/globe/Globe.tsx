@@ -292,7 +292,11 @@ function Pin({ pin }: { pin: GlobePin }) {
   useEffect(() => {
     ref.current?.lookAt(pos.clone().multiplyScalar(2));
   }, [pos]);
+  const { camera } = useThree();
   useFrame(() => {
+    // keep pins a constant size on screen as the camera zooms
+    const k = Math.max(0.35, (camera.position.length() - 1) / 2.75);
+    ref.current?.scale.setScalar(k);
     const t = ((performance.now() - born.current) / 1000) % 2.4;
     if (ring.current) {
       const k = Math.min(1, t / 1.4);

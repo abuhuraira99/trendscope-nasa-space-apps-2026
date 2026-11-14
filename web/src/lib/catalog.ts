@@ -20,6 +20,8 @@ export interface VarInfo {
   decreaseWord: string;
   ramp: RampKind;
   powerParam?: string;
+  /** multiply live POWER point values by this to match the grid units */
+  liveScale?: number;
   stat: "mean" | "sum";
   sourceLine: string;
   sourceUrl?: string;
@@ -37,13 +39,15 @@ const BASE: Record<string, Omit<VarInfo, "plain" | "whyItMatters" | "expert" | "
   gpcp: { id: "gpcp", name: "Precipitation (observed)", shortName: "GPCP", sphere: "water", unitsLabel: "mm/day", decimals: 3, increaseWord: "wetter", decreaseWord: "drier", ramp: "coolUp", stat: "mean", sourceLine: "GPCP v2.3, NASA GSFC and NOAA" },
   soil: { id: "soil", name: "Root-zone soil wetness", shortName: "Soil water", sphere: "water", unitsLabel: "fraction", decimals: 3, increaseWord: "wetter soil", decreaseWord: "drying soil", ramp: "coolUp", powerParam: "GWETROOT", stat: "mean", sourceLine: "MERRA-2 via NASA POWER", landOnly: true },
   evap: { id: "evap", name: "Land evaporation", shortName: "Evaporation", sphere: "water", unitsLabel: "mm/day", decimals: 3, increaseWord: "more evaporation", decreaseWord: "less evaporation", ramp: "coolUp", powerParam: "EVLAND", stat: "mean", sourceLine: "MERRA-2 via NASA POWER", landOnly: true },
-  pw: { id: "pw", name: "Water vapour in the air", shortName: "Water vapour", sphere: "water", unitsLabel: "kg/m²", decimals: 2, increaseWord: "moister air", decreaseWord: "drier air", ramp: "coolUp", powerParam: "TQV", stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
+  pw: { id: "pw", name: "Water vapour in the air", shortName: "Water vapour", sphere: "water", unitsLabel: "cm", decimals: 3, increaseWord: "moister air", decreaseWord: "drier air", ramp: "coolUp", powerParam: "TQV", liveScale: 0.1, stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
   snow: { id: "snow", name: "Snow cover", shortName: "Snow cover", sphere: "ice", unitsLabel: "fraction", decimals: 3, increaseWord: "more snow", decreaseWord: "less snow", ramp: "coolUp", powerParam: "FRSNO", stat: "mean", sourceLine: "MERRA-2 via NASA POWER", landOnly: true },
   seaice: { id: "seaice", name: "Sea ice", shortName: "Sea ice", sphere: "ice", unitsLabel: "fraction", decimals: 3, increaseWord: "more sea ice", decreaseWord: "less sea ice", ramp: "coolUp", powerParam: "FRSEAICE", stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
   ozone: { id: "ozone", name: "Total ozone", shortName: "Ozone", sphere: "air", unitsLabel: "DU", decimals: 1, increaseWord: "thicker ozone", decreaseWord: "thinner ozone", ramp: "ozone", powerParam: "TO3", stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
   aod: { id: "aod", name: "Aerosol optical depth", shortName: "Haze", sphere: "air", unitsLabel: "", decimals: 3, increaseWord: "hazier", decreaseWord: "clearer", ramp: "aerosol", powerParam: "AOD_55_ADJ", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
   cloud: { id: "cloud", name: "Cloud amount", shortName: "Clouds", sphere: "air", unitsLabel: "%", decimals: 2, increaseWord: "cloudier", decreaseWord: "clearer skies", ramp: "neutral", powerParam: "CLOUD_AMT", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
   solar: { id: "solar", name: "Sunlight at the surface", shortName: "Sunlight", sphere: "air", unitsLabel: "MJ/m²/day", decimals: 3, increaseWord: "brighter", decreaseWord: "dimmer", ramp: "neutral", powerParam: "ALLSKY_SFC_SW_DWN", stat: "mean", sourceLine: "CERES SYN1deg via NASA POWER" },
+  tws: { id: "tws", name: "Water stored on land", shortName: "Land water", sphere: "water", unitsLabel: "cm", decimals: 2, increaseWord: "gaining water", decreaseWord: "losing water", ramp: "coolUp", stat: "mean", sourceLine: "GRACE and GRACE-FO, NASA JPL", landOnly: true },
+  ndvi: { id: "ndvi", name: "Vegetation greenness", shortName: "Greenness", sphere: "life", unitsLabel: "NDVI", decimals: 4, increaseWord: "greening", decreaseWord: "browning", ramp: "vegetation", stat: "mean", sourceLine: "MODIS Terra, NASA LP DAAC", landOnly: true },
   wind: { id: "wind", name: "Wind speed", shortName: "Wind", sphere: "air", unitsLabel: "m/s", decimals: 3, increaseWord: "windier", decreaseWord: "calmer", ramp: "neutral", powerParam: "WS10M", stat: "mean", sourceLine: "MERRA-2 via NASA POWER" },
 };
 

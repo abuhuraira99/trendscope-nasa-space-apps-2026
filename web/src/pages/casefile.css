@@ -1,0 +1,234 @@
+.casefile {
+  display: grid;
+  grid-template-columns: minmax(360px, 460px) 1fr;
+  height: calc(100dvh - var(--topbar-h));
+  overflow: hidden;
+}
+
+.cf-story {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 28px 32px 24px;
+  border-right: 1px solid var(--line);
+}
+
+.cf-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  color: var(--ink-2);
+  font-size: var(--t-13);
+  text-decoration: none;
+}
+
+.cf-back:hover {
+  color: var(--ink);
+}
+
+.cf-story h1 {
+  margin-top: 22px;
+  font-size: var(--t-44);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.cf-question {
+  margin-top: 12px;
+  color: var(--ink-2);
+  font-size: var(--t-17);
+}
+
+.cf-progress {
+  display: flex;
+  gap: 4px;
+  margin-top: 26px;
+}
+
+.cf-progress button {
+  flex: 1;
+  height: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: var(--line-strong);
+  cursor: pointer;
+  transition: background-color var(--d-med) var(--ease);
+}
+
+.cf-progress button.done {
+  background: color-mix(in oklab, var(--ink) 55%, var(--line-strong));
+}
+
+.cf-progress button[aria-selected="true"] {
+  background: var(--ink);
+}
+
+.cf-progress button:focus-visible {
+  outline-offset: 4px;
+}
+
+.cf-step {
+  flex: 1;
+  margin-top: 26px;
+  animation: cf-in var(--d-slow) var(--ease) both;
+}
+
+@keyframes cf-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.cf-step-var {
+  font-size: var(--t-13);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.cf-step-var .num {
+  font-weight: 400;
+  color: var(--ink-3);
+  font-size: var(--t-12);
+}
+
+.cf-step h2 {
+  margin-top: 8px;
+  font-size: var(--t-24);
+  font-weight: 600;
+}
+
+.cf-body {
+  margin-top: 12px;
+  font-size: var(--t-15);
+  line-height: 1.65;
+  color: color-mix(in oklab, var(--ink) 88%, var(--ink-2));
+}
+
+.cf-chart {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.cf-final h2 {
+  font-size: var(--t-24);
+  line-height: 1.25;
+}
+
+.cf-final h3 {
+  margin-top: 24px;
+  font-size: var(--t-14);
+  color: var(--ink-2);
+}
+
+.cf-sources {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  font-size: var(--t-13);
+}
+
+.cf-sources a {
+  color: var(--ink-2);
+}
+
+.cf-sources a:hover {
+  color: var(--ink);
+}
+
+.cf-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.cf-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.cf-stage {
+  position: relative;
+  min-width: 0;
+  background: radial-gradient(120% 90% at 55% 50%, #10141a 0%, var(--ground) 62%);
+}
+
+.cf-globe {
+  position: absolute;
+  inset: 0;
+}
+
+.cf-legend {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: color-mix(in oklab, var(--panel) 92%, transparent);
+  font-size: var(--t-12);
+  color: var(--ink-2);
+}
+
+.cf-legend strong {
+  font-size: var(--t-14);
+  color: var(--ink);
+}
+
+.cf-pins {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.cf-pin {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.cf-pin-2 {
+  margin-left: 8px;
+  background: var(--ink-2);
+}
+
+@media (max-width: 900px) {
+  .casefile {
+    display: flex;
+    flex-direction: column-reverse;
+    height: auto;
+    overflow: visible;
+  }
+
+  .cf-stage {
+    height: 52dvh;
+    flex: none;
+  }
+
+  .cf-story {
+    overflow: visible;
+    border-right: 0;
+    padding: 22px 20px;
+  }
+
+  .cf-story h1 {
+    font-size: var(--t-32);
+  }
+}

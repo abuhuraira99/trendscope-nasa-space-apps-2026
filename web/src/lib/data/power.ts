@@ -20,7 +20,7 @@ export interface PowerPointResult {
 
 const ENDPOINT = "https://power.larc.nasa.gov/api/temporal/monthly/point";
 const memory = new Map<string, Promise<PowerPointResult>>();
-const LS_PREFIX = "ts.power.v1.";
+const LS_PREFIX = "ts.power.v2.";
 
 function key(lat: number, lon: number, params: string[], start: number, end: number) {
   return `${lat.toFixed(2)},${lon.toFixed(2)}|${[...params].sort().join(",")}|${start}-${end}`;
@@ -84,6 +84,8 @@ export function fetchPowerPoint(
     url.searchParams.set("start", String(start));
     url.searchParams.set("end", String(end));
     url.searchParams.set("format", "JSON");
+    // UTC matches the gridded archive and is required for IMERG precipitation.
+    url.searchParams.set("time-standard", "UTC");
     const res = await fetch(url, { signal });
     if (!res.ok) throw new Error(`NASA POWER returned HTTP ${res.status}`);
     const json = await res.json();

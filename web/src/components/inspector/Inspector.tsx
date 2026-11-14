@@ -105,19 +105,23 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
 
   const monthly: MonthlyAnalysis | null = useMemo(() => {
     if (live.status !== "ready" || !live.data || !vi.powerParam) return null;
-    const pts = live.data.params[vi.powerParam];
-    if (!pts?.length) return null;
+    const raw = live.data.params[vi.powerParam];
+    if (!raw?.length) return null;
+    const k = vi.liveScale ?? 1;
+    const pts = k === 1 ? raw : raw.map((p) => ({ ...p, value: p.value === null ? null : p.value * k }));
     return analyzeMonthly(pts, { stat: vi.stat });
-  }, [live, vi.powerParam, vi.stat]);
+  }, [live, vi.powerParam, vi.stat, vi.liveScale]);
 
   const monthlyAnoms = useMemo(() => {
     if (live.status !== "ready" || !live.data || !vi.powerParam) return null;
-    const pts = live.data.params[vi.powerParam];
-    if (!pts?.length || vi.stat === "sum") return null;
+    const raw = live.data.params[vi.powerParam];
+    if (!raw?.length || vi.stat === "sum") return null;
+    const k = vi.liveScale ?? 1;
+    const pts = k === 1 ? raw : raw.map((p) => ({ ...p, value: p.value === null ? null : p.value * k }));
     return deseasonalize(pts)
       .filter((p) => p.value !== null)
       .map((p) => ({ t: p.year + (p.month - 0.5) / 12, v: p.value as number }));
-  }, [live, vi.powerParam, vi.stat]);
+  }, [live, vi.powerParam, vi.stat, vi.liveScale]);
 
   const rows = useMemo(() => {
     const list = metas.map((m) => ({ meta: m, row: scan.get(m.id), loaded: scan.has(m.id) }));

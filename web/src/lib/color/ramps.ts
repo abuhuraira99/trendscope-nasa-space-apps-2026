@@ -5,7 +5,7 @@
  * common forms of colour blindness because they differ in lightness as well as hue.
  */
 
-export type RampKind = "warmUp" | "coolUp" | "ozone" | "aerosol" | "neutral";
+export type RampKind = "warmUp" | "coolUp" | "ozone" | "aerosol" | "vegetation" | "neutral";
 
 type Stop = [number, string];
 
@@ -51,6 +51,16 @@ const RAMPS: Record<RampKind, Stop[]> = {
     [0.64, "#5a3b1d"],
     [0.82, "#b9783a"],
     [1, "#ffd59c"],
+  ],
+  // vegetation: browning amber-brown, greening leaf green
+  vegetation: [
+    [0, "#ffd08a"],
+    [0.18, "#c9822f"],
+    [0.36, "#5c3a17"],
+    [0.5, "#1c1d1a"],
+    [0.64, "#26461f"],
+    [0.82, "#5fa04a"],
+    [1, "#c8f2a4"],
   ],
   neutral: [
     [0, "#bfc6d0"],
