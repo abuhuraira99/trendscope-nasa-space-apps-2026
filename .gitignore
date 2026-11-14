@@ -26,3 +26,10 @@ Thumbs.db
 
 # Streamlit secrets
 .streamlit/secrets.toml
+data_fetch_stdout.log
+.cache/
+node_modules/
+web/dist/
+video/out/
+.cache_fetch*.log
+.cache_*.log

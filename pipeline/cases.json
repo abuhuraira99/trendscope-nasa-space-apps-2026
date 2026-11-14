@@ -1,0 +1,14 @@
+[
+  {
+    "id": "lahore-heat",
+    "lat": 31.52,
+    "lon": 74.36,
+    "params": [
+      "T2M",
+      "T2M_MAX_AVG",
+      "T2MWET",
+      "PRECTOTCORR",
+      "GWETROOT"
+    ]
+  }
+]
