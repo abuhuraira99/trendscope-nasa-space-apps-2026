@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { Component, lazy, Suspense, useEffect, type ReactNode } from "react";
 import { BrowserRouter, Route, Routes, useSearchParams } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import Atlas from "./pages/Atlas";
@@ -10,6 +10,39 @@ const Method = lazy(() => import("./pages/Method"));
 const DataPage = lazy(() => import("./pages/DataPage"));
 const About = lazy(() => import("./pages/About"));
 const Demo = lazy(() => import("./pages/Demo"));
+
+// Fetch the other pages in the background so navigation is instant.
+if (typeof window !== "undefined") {
+  const warm = () => {
+    void import("./pages/Cases");
+    void import("./pages/CaseFile");
+    void import("./pages/Method");
+    void import("./pages/DataPage");
+    void import("./pages/About");
+  };
+  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback;
+  if (ric) ric(warm);
+  else window.setTimeout(warm, 1500);
+}
+
+class PageBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return (
+      <main id="main" className="app-error">
+        <h1>This page did not load</h1>
+        <p>A newer version of TrendScope may have been published. Reload to get it.</p>
+        <button className="btn btn-primary" type="button" onClick={() => window.location.reload()}>
+          Reload the page
+        </button>
+      </main>
+    );
+  }
+}
 
 function DeepLink() {
   const [params] = useSearchParams();
@@ -38,6 +71,7 @@ export default function App() {
         Skip to content
       </a>
       <TopBar />
+      <PageBoundary>
       <Suspense fallback={<div className="page-loading" aria-busy="true" />}>
         <Routes>
           <Route
@@ -58,6 +92,7 @@ export default function App() {
           <Route path="*" element={<Atlas />} />
         </Routes>
       </Suspense>
+      </PageBoundary>
     </BrowserRouter>
   );
 }

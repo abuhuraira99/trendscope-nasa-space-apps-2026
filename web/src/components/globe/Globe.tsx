@@ -327,6 +327,14 @@ function Pin({ pin }: { pin: GlobePin }) {
   const color = pin.tone === "secondary" ? "#a8adb5" : "#ece8e1";
   return (
     <group ref={ref} position={pos}>
+      <mesh position={[0, 0, -0.0005]}>
+        <circleGeometry args={[0.0215, 48]} />
+        <meshBasicMaterial color="#0b0d10" transparent opacity={0.55} />
+      </mesh>
+      <mesh>
+        <ringGeometry args={[0.009, 0.0125, 48]} />
+        <meshBasicMaterial color="#0b0d10" />
+      </mesh>
       <mesh>
         <circleGeometry args={[0.009, 32]} />
         <meshBasicMaterial color={color} />

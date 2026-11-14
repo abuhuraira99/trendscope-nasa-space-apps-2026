@@ -8,7 +8,7 @@ import { useSeriesGrid, useTrendGrid, useVarsFile } from "../lib/data/hooks";
 import { cellIndex, type VarMeta } from "../lib/data/grids";
 import { info, SPHERES, slopeScaleFor } from "../lib/catalog";
 import { rampCss } from "../lib/color/ramps";
-import { coord, fmt, pct, signed } from "../lib/format";
+import { coord, pct, signed } from "../lib/format";
 import Inspector from "../components/inspector/Inspector";
 import SearchBox from "../components/SearchBox";
 import { askQuestion } from "../lib/ask";
@@ -57,6 +57,14 @@ export default function Atlas() {
     window.setTimeout(() => setAskNote(null), 9000);
   };
   const [twins, setTwins] = useState(false);
+
+  // A portrait phone stage needs the camera further out to show the whole planet.
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 820px)").matches && !useAtlas.getState().place) {
+      const s = useAtlas.getState();
+      s.flyTo(s.view.lat, s.view.lon, 5.4);
+    }
+  }, []);
 
   // Keep the selected variable valid once the catalogue loads.
   useEffect(() => {
@@ -142,6 +150,16 @@ export default function Atlas() {
     return { ...hover, slope: s, p: trend.data.p[i], sig: trend.data.sig[i] };
   }, [hover, meta, trend]);
 
+  const needle =
+    mode === "trend" && hoverReadout && meta && Number.isFinite(hoverReadout.slope)
+      ? {
+          pos: Math.max(0, Math.min(1, 0.5 + hoverReadout.slope / (2 * slopeScale(meta)))),
+          slope: hoverReadout.slope,
+          lat: hoverReadout.lat,
+          lon: hoverReadout.lon,
+        }
+      : null;
+
   const onPick = (lat: number, lon: number) => {
     pick({ lat, lon });
   };
@@ -154,12 +172,24 @@ export default function Atlas() {
         <div className="rail-intro">
           <h1>See where Earth is changing, and prove it.</h1>
           <p className="rail-fact">
-            {vars.status === "ready" ? `${vars.data.period[1] - vars.data.period[0] + 1} years` : "Decades"} of NASA satellite and model
-            data, tested for real trends at every place on the planet.
+            {meta ? (
+              <>
+                Since {meta.years[0]}, {vi.name.toLowerCase()} has a significant trend toward{" "}
+                {areaShare(meta).up ? vi.increaseWord : vi.decreaseWord} over{" "}
+                <strong className="num">{pct(areaShare(meta).share)}</strong> of the {info(meta.id).landOnly ? "land" : "planet"}.
+              </>
+            ) : (
+              "NASA satellite and model data, tested for real trends at every place on the planet."
+            )}
           </p>
-          <p className="rail-more">
-            New here? Try <Link to="/cases/lahore-humid-heat">a guided case file</Link> or switch to detective mode below.
-          </p>
+          <div className="rail-actions">
+            <button className="btn btn-primary" type="button" onClick={() => searchRef.current?.focus()}>
+              Investigate a place
+            </button>
+            <Link className="btn btn-ghost" to="/cases">
+              Case files
+            </Link>
+          </div>
         </div>
 
         <div className="rail-tabs" role="tablist" aria-label="Mode">
@@ -177,6 +207,7 @@ export default function Atlas() {
           </div>
         ) : (
         <nav className="var-list" aria-label="Choose what the globe shows">
+          <p className="var-head">Share of area with a significant trend</p>
           {SPHERES.map((sp) => {
             const items = metas.filter((m) => info(m.id).sphere === sp.id);
             if (!items.length) return null;
@@ -186,10 +217,7 @@ export default function Atlas() {
                 <ul>
                   {items.map((m) => {
                     const v = info(m.id);
-                    const up = m.summary.validCells ? m.summary.fdrUp / m.summary.validCells : 0;
-                    const down = m.summary.validCells ? m.summary.fdrDown / m.summary.validCells : 0;
-                    const dominantUp = up >= down;
-                    const share = dominantUp ? up : down;
+                    const { up: dominantUp, share } = areaShare(m);
                     return (
                       <li key={m.id}>
                         <button
@@ -202,9 +230,8 @@ export default function Atlas() {
                           <span className="var-name" title={v.name}>
                             {v.name}
                           </span>
-                          <span className="var-stat">
-                            <span className="num">{pct(share)}</span> {dominantUp ? v.increaseWord : v.decreaseWord}
-                          </span>
+                          <span className="var-word">{dominantUp ? v.increaseWord : v.decreaseWord}</span>
+                          <span className="var-stat num">{pct(share)}</span>
                         </button>
                       </li>
                     );
@@ -233,7 +260,7 @@ export default function Atlas() {
           <SearchBox
             inputRef={searchRef}
             onAsk={onAsk}
-            placeholder="Search a place, or ask: is Lahore getting more humid?"
+            placeholder="Search a place or ask a question"
             onSelect={(h) => {
               pick({ lat: h.lat, lon: h.lon, name: [h.name, h.detail].filter(Boolean).join(", ") });
               flyTo(h.lat, h.lon, 2.7);
@@ -284,18 +311,23 @@ export default function Atlas() {
               <strong>{vi.name}</strong>
               <span>
                 {mode === "trend"
-                  ? `Trend per decade, ${meta.years[0]} to ${meta.years[1]}`
-                  : `Difference from the ${meta.years[0]} to ${Math.min(meta.years[1], meta.years[0] + 29)} average`}
+                  ? `Trend per decade${vi.unitsLabel ? ` (${vi.unitsLabel})` : ""}, ${meta.years[0]} to ${meta.years[1]}`
+                  : `Difference from the ${meta.years[0]} to ${Math.min(meta.years[1], meta.years[0] + 29)} average${vi.unitsLabel ? ` (${vi.unitsLabel})` : ""}`}
               </span>
             </div>
-            <div className="legend-bar" style={{ background: rampCss(vi.ramp) }} />
+            <div className="legend-bar" style={{ background: rampCss(vi.ramp) }}>
+              {needle !== null && <i className="legend-needle" style={{ left: `${needle.pos * 100}%` }} aria-hidden />}
+            </div>
             <div className="legend-ticks num">
               <span>{signed(-(field?.scale ?? slopeScale(meta)), vi.decimals)}</span>
-              <span>0</span>
-              <span>
-                {signed(field?.scale ?? slopeScale(meta), vi.decimals)} {vi.unitsLabel}
-              </span>
+              <span className="legend-mid">0</span>
+              <span className="legend-max">{signed(field?.scale ?? slopeScale(meta), vi.decimals)}</span>
             </div>
+            {needle !== null && (
+              <p className="legend-read num" aria-hidden>
+                {coord(needle.lat, needle.lon)} · {signed(needle.slope, vi.decimals)} {vi.unitsLabel}
+              </p>
+            )}
             <div className="legend-words">
               <span>{vi.decreaseWord}</span>
               <span>{vi.increaseWord}</span>
@@ -320,8 +352,12 @@ export default function Atlas() {
             )}
             {mode === "trend" && (
               <div className="legend-sig">
-                <span className="sig-key sig-key-solid" /> passes false discovery test
-                <span className="sig-key sig-key-faint" /> could be chance
+                <span className="legend-key">
+                  <span className="sig-key sig-key-solid" /> passes the false discovery test
+                </span>
+                <span className="legend-key">
+                  <span className="sig-key sig-key-faint" /> could be chance
+                </span>
               </div>
             )}
           </div>
@@ -373,17 +409,6 @@ export default function Atlas() {
                 <span className="ruler-line" aria-hidden />
                 <span>{meta.years[1]}</span>
               </div>
-            )}
-          </div>
-        )}
-
-        {hoverReadout && !place && (
-          <div className="readout num" aria-hidden>
-            <span>{coord(hoverReadout.lat, hoverReadout.lon)}</span>
-            {Number.isFinite(hoverReadout.slope) && (
-              <span>
-                {signed(hoverReadout.slope, vi.decimals)} {vi.unitsLabel}/decade · p {fmt(hoverReadout.p, 3)}
-              </span>
             )}
           </div>
         )}
@@ -478,4 +503,11 @@ function pickTwins(m: VarMeta) {
     }
   }
   return best ? { up: best.up, down: best.down } : null;
+}
+
+/** Area-weighted share of the mapped area with an FDR-significant trend, in the dominant direction. */
+function areaShare(m: VarMeta): { up: boolean; share: number } {
+  const up = m.summary.areaUp ?? (m.summary.validCells ? m.summary.fdrUp / m.summary.validCells : 0);
+  const down = m.summary.areaDown ?? (m.summary.validCells ? m.summary.fdrDown / m.summary.validCells : 0);
+  return up >= down ? { up: true, share: up } : { up: false, share: down };
 }

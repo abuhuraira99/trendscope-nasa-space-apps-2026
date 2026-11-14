@@ -6,7 +6,7 @@ import { fetchPowerPoint, type PowerPointResult } from "../../lib/data/power";
 import { info, slopeScaleFor } from "../../lib/catalog";
 import { reverseName } from "../../lib/geocode";
 import { analyzeAnnual, analyzeMonthly, deseasonalize, type AnnualResult, type MonthlyAnalysis } from "../../lib/stats";
-import { rampColor } from "../../lib/color/ramps";
+import { rampColor, rampCss } from "../../lib/color/ramps";
 import { coord, fmt, pEq, pValue, pWords, signed } from "../../lib/format";
 import TrendChart from "../charts/TrendChart";
 import SeasonBars from "../charts/SeasonBars";
@@ -239,11 +239,13 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
           )}
           {res && res.ok ? (
             <>
-              <p className="insp-big num">
-                <span className="insp-chip" style={{ background: color }} aria-hidden />
+              <p className="insp-big">
                 {signed(res.slopePerDecade, vi.decimals)}
                 <span> {vi.unitsLabel} per decade</span>
               </p>
+              <div className="insp-gauge" style={{ background: rampCss(vi.ramp) }} aria-hidden>
+                <i style={{ left: `${(Math.max(-1, Math.min(1, res.slopePerDecade / slopeScale(meta))) + 1) * 50}%` }} />
+              </div>
               <h3 className="insp-head-line">{verdict?.head}</h3>
               <p className="insp-sentence">{verdict?.body}</p>
             </>

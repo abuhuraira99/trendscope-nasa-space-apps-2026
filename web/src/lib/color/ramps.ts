@@ -12,14 +12,16 @@ type Stop = [number, string];
 const RAMPS: Record<RampKind, Stop[]> = {
   // increase = warm (temperature, heat stress, cooling demand)
   warmUp: [
-    [0, "#b9ccff"],
-    [0.16, "#5f9fd6"],
-    [0.33, "#285878"],
-    [0.47, "#1a2026"],
-    [0.53, "#241a16"],
-    [0.67, "#7a2e17"],
-    [0.84, "#cf5b34"],
-    [1, "#ffbf94"],
+    [0, "#c4d6ff"],
+    [0.12, "#6fa8dc"],
+    [0.24, "#2f6d97"],
+    [0.36, "#1d3f57"],
+    [0.47, "#171d23"],
+    [0.53, "#2a1814"],
+    [0.64, "#6b1d1a"],
+    [0.76, "#b23a26"],
+    [0.88, "#e9803a"],
+    [1, "#fbe2a0"],
   ],
   // increase = cool / wet (precipitation, soil water, snow, sea ice): decrease shows warm
   coolUp: [

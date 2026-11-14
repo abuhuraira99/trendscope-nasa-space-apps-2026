@@ -130,9 +130,19 @@ button {
   white-space: nowrap;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--line-strong) transparent;
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 
 ::-webkit-scrollbar {
@@ -142,8 +152,13 @@ button {
 
 ::-webkit-scrollbar-thumb {
   background: var(--line-strong);
+  background-clip: padding-box;
   border-radius: 10px;
-  border: 3px solid var(--panel);
+  border: 3px solid transparent;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ink-3);
 }
 
 ::-webkit-scrollbar-track {
@@ -272,4 +287,50 @@ button {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.page-loading {
+  min-height: calc(100dvh - var(--topbar-h));
+  padding: 72px 24px;
+}
+
+.page-loading::before,
+.page-loading::after {
+  content: "";
+  display: block;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--panel) 0%, var(--panel-3) 50%, var(--panel) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s var(--ease) infinite;
+}
+
+.page-loading::before {
+  height: 56px;
+  max-width: 520px;
+}
+
+.page-loading::after {
+  height: 18px;
+  margin-top: 20px;
+  max-width: 420px;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.app-error {
+  min-height: calc(100dvh - var(--topbar-h));
+  display: grid;
+  place-content: center;
+  gap: 14px;
+  justify-items: start;
+  padding: 24px;
 }

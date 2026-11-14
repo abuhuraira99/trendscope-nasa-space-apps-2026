@@ -232,3 +232,49 @@
     font-size: var(--t-32);
   }
 }
+
+/* ---- Finish review fixes ---- */
+.cf-progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 26px;
+  font-size: var(--t-13);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.cf-progress-label .num {
+  font-weight: 400;
+  color: var(--ink-3);
+  font-size: var(--t-12);
+}
+
+.cf-progress {
+  margin-top: 10px;
+  align-items: center;
+}
+
+.cf-progress .cf-end {
+  flex: 0 0 8px;
+  height: 8px;
+  border-radius: 1px;
+}
+
+.cf-legend {
+  min-width: 260px;
+}
+
+.cf-legend-bar {
+  display: block;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 2px;
+}
+
+.cf-legend-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--t-11);
+  color: var(--ink-2);
+}

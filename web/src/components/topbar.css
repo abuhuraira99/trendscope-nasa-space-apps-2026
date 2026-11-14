@@ -81,7 +81,7 @@
     overflow-x: auto;
   }
 
-  .brand span {
+  .topbar nav a[href="/"] {
     display: none;
   }
 

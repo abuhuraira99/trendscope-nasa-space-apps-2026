@@ -8,7 +8,7 @@ import { useTrendGrid, useVarsFile } from "../lib/data/hooks";
 import { cellIndex, cellSeries, loadSeries, type VarMeta } from "../lib/data/grids";
 import { analyzeAnnual, type AnnualResult } from "../lib/stats";
 import { info, slopeScaleFor } from "../lib/catalog";
-import { rampColor } from "../lib/color/ramps";
+import { rampColor, rampCss } from "../lib/color/ramps";
 import { pValue, signed } from "../lib/format";
 import { angularDistance } from "../components/globe/geo";
 import "./casefile.css";
@@ -39,7 +39,7 @@ function words(varId: string, r: AnnualResult | undefined) {
     slope: `${signed(r.slopePerDecade, v.decimals)}${unit}`,
     ciLow: `${signed(r.ciPerDecade[0], v.decimals)}${unit}`,
     ciHigh: `${signed(r.ciPerDecade[1], v.decimals)}${unit}`,
-    p: r.p < 0.001 ? "below 0.001" : pValue(r.p),
+    p: r.p < 0.001 ? "< 0.001" : `= ${pValue(r.p)}`,
     years: r.n,
     firstYear: r.firstYear,
     lastYear: r.lastYear,
@@ -122,8 +122,11 @@ export default function CaseFile() {
 
   const field: GlobeField | null = useMemo(() => {
     if (!focusMeta || trend.status !== "ready") return null;
-    return { key: focusMeta.id, geom: focusMeta.grid, values: trend.data.slope, sig: trend.data.sig, scale: slopeScale(focusMeta), ramp: info(focusMeta.id).ramp };
-  }, [focusMeta, trend]);
+    const r = results[`${focusMeta.id}|focus|${step}`]?.res;
+    const base = slopeScale(focusMeta);
+    const scale = r && r.ok ? Math.max(base, Math.abs(r.slopePerDecade) * 1.15) : base;
+    return { key: `${focusMeta.id}|s${scale.toFixed(3)}`, geom: focusMeta.grid, values: trend.data.slope, sig: trend.data.sig, scale, ramp: info(focusMeta.id).ramp };
+  }, [focusMeta, trend, results, step]);
 
   if (!kase) {
     return (
@@ -189,6 +192,10 @@ export default function CaseFile() {
         <h1>{kase.title}</h1>
         <p className="cf-question">{kase.question}</p>
 
+        <p className="cf-progress-label">
+          <span>{atEnd ? "Verdict" : fi?.name}</span>
+          <span className="num">{atEnd ? `${kase.steps.length} steps` : `${step + 1} / ${kase.steps.length}`}</span>
+        </p>
         <div className="cf-progress" role="tablist" aria-label="Steps">
           {kase.steps.map((st, i) => (
             <button
@@ -206,9 +213,6 @@ export default function CaseFile() {
 
         {!atEnd && s && fi ? (
           <article className="cf-step" key={step} aria-live="polite">
-            <p className="cf-step-var">
-              {fi.name} <span className="num">· step {step + 1} of {kase.steps.length}</span>
-            </p>
             <h2>{s.title}</h2>
             <p className="cf-body">{fillPlaceholders(s.body, values)}</p>
             {focusRes && focusRes.res.ok ? (
@@ -237,7 +241,6 @@ export default function CaseFile() {
           </article>
         ) : (
           <article className="cf-step cf-final" aria-live="polite">
-            <p className="cf-step-var">What we found</p>
             <h2>{headWords ? fillPlaceholders(kase.takeaway, { ...headWords, place: kase.place, variable: info(kase.variables[0]).name.toLowerCase() }) : "…"}</h2>
             <h3>Sources</h3>
             <ul className="cf-sources">
@@ -282,7 +285,13 @@ export default function CaseFile() {
           <div className="cf-legend">
             <strong>{fi.name}</strong>
             <span>
-              trend per decade, {focusMeta.years[0]} to {focusMeta.years[1]}
+              trend per decade{fi.unitsLabel ? ` (${fi.unitsLabel})` : ""}, {focusMeta.years[0]} to {focusMeta.years[1]}
+            </span>
+            <span className="cf-legend-bar" style={{ background: rampCss(fi.ramp) }} aria-hidden />
+            <span className="cf-legend-ticks num">
+              <span>{signed(-(field?.scale ?? slopeScale(focusMeta)), fi.decimals)}</span>
+              <span>0</span>
+              <span>{signed(field?.scale ?? slopeScale(focusMeta), fi.decimals)}</span>
             </span>
             {kase.compareWith && (
               <span className="cf-pins">

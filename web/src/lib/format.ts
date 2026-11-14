@@ -22,6 +22,7 @@ export function pValue(p: number): string {
 /** Plain-language odds for a p-value. */
 export function pWords(p: number): string {
   if (!Number.isFinite(p)) return "unknown";
+  if (p < 0.0001) return "less than 1 in 10,000";
   if (p < 0.001) return "less than 1 in 1,000";
   if (p < 0.01) return `about 1 in ${Math.round(1 / p).toLocaleString("en-US")}`;
   if (p < 0.1) return `about 1 in ${Math.round(1 / p)}`;

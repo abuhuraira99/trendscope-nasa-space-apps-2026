@@ -236,3 +236,152 @@
     width: 180px;
   }
 }
+
+/* ---- Finish review fixes ---- */
+.rail-fact strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.var-head {
+  margin: 12px 12px 0;
+  font-size: var(--t-11);
+  color: var(--ink-3);
+  text-align: right;
+}
+
+.var-row {
+  grid-template-columns: 22px 1fr 4.5ch;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  row-gap: 1px;
+  min-height: 46px;
+}
+
+.var-row .var-swatch {
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+.var-row .var-name {
+  grid-column: 2;
+  grid-row: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+}
+
+.var-word {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: var(--t-12);
+  color: var(--ink-3);
+  line-height: 1.2;
+}
+
+.var-row .var-stat {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  text-align: right;
+  font-size: var(--t-14);
+  color: var(--ink);
+}
+
+.var-list {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
+  padding-bottom: 28px;
+}
+
+.legend-bar {
+  position: relative;
+  clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0 50%);
+}
+
+.legend-needle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ground);
+  transition: left 120ms var(--ease);
+}
+
+.legend-ticks {
+  position: relative;
+  display: block;
+  height: 16px;
+}
+
+.legend-ticks > span {
+  position: absolute;
+  top: 0;
+}
+
+.legend-ticks > span:first-child {
+  left: 0;
+}
+
+.legend-ticks .legend-mid {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.legend-ticks .legend-max {
+  right: 0;
+}
+
+.legend-read {
+  margin-top: 4px;
+  font-size: var(--t-11);
+  color: var(--ink);
+  white-space: pre;
+}
+
+.legend-sig {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.legend-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.sig-key-faint {
+  margin-left: 0;
+}
+
+.stage-hint {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in oklab, var(--panel) 92%, transparent);
+  color: var(--ink-2);
+  font-size: var(--t-12);
+}
+
+.has-inspector .legend-twins,
+.has-inspector .legend-sig,
+.has-inspector .stage-hint {
+  display: none;
+}
+
+@media (min-width: 821px) and (max-width: 1680px) {
+  .atlas.has-inspector {
+    grid-template-columns: 0 1fr minmax(380px, 456px);
+  }
+
+  .has-inspector .rail {
+    visibility: hidden;
+    overflow: hidden;
+    border: 0;
+  }
+}

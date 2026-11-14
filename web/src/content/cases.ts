@@ -111,12 +111,12 @@ export const CASES: CaseFile[] = [
     steps: [
       {
         title: "Start with the thermometer",
-        body: "Air temperature is the number in every weather report, so start there. In the MERRA-2 cell around Lahore the verdict is {verdict}, with a Sen slope of {slope} per decade (p = {p}). Lahore is known for fierce summers, so a result like this needs explaining.",
+        body: "Air temperature is the number in every weather report, so start there. In the MERRA-2 cell around Lahore the verdict is {verdict}, with a Sen slope of {slope} per decade (p {p}). Lahore is known for fierce summers, so a result like this needs explaining.",
         focus: { variable: "t2m", lat: 31.55, lon: 74.34, zoom: 4 },
       },
       {
         title: "Add the humidity",
-        body: "Wet-bulb temperature folds heat and humidity into one number: the coolest your skin can get by sweating. Here the verdict is {verdict}, at {slope} per decade (p = {p}). These are yearly averages far below the dangerous peaks, and they show which way the background is moving.",
+        body: "Wet-bulb temperature folds heat and humidity into one number: the coolest your skin can get by sweating. Here the verdict is {verdict}, at {slope} per decade (p {p}). These are yearly averages far below the dangerous peaks, and they show which way the background is moving.",
         focus: { variable: "t2mwet", lat: 31.55, lon: 74.34, zoom: 4 },
       },
       {
@@ -131,7 +131,7 @@ export const CASES: CaseFile[] = [
       },
       {
         title: "What the irrigation costs underground",
-        body: "The GRACE satellites weigh the water stored on land by measuring tiny changes in Earth's gravity. Under this part of Punjab the verdict is {verdict}, at {slope} per decade (p = {p}). Rodell et al. (2009) used GRACE to show that groundwater pumped for irrigation in north-west India was not being replaced, the same water that keeps these fields and their air humid.",
+        body: "The GRACE satellites weigh the water stored on land by measuring tiny changes in Earth's gravity. Under this part of Punjab the verdict is {verdict}, at {slope} per decade (p {p}). Rodell et al. (2009) used GRACE to show that groundwater pumped for irrigation in north-west India was not being replaced, the same water that keeps these fields and their air humid.",
         focus: { variable: "tws", lat: 30.25, lon: 74.25, zoom: 3 },
       },
       {
@@ -180,7 +180,7 @@ export const CASES: CaseFile[] = [
     steps: [
       {
         title: "A sea that is heating up",
-        body: "This cell lies in the northern Barents Sea, between Svalbard and Franz Josef Land. For air temperature the verdict is {verdict}, at {slope} per decade (p = {p}). Weather stations around it record some of the fastest warming on Earth, up to 2.7 °C per decade (Isaksen et al. 2022).",
+        body: "This cell lies in the northern Barents Sea, between Svalbard and Franz Josef Land. For air temperature the verdict is {verdict}, at {slope} per decade (p {p}). Weather stations around it record some of the fastest warming on Earth, up to 2.7 °C per decade (Isaksen et al. 2022).",
         focus: { variable: "t2m", lat: 78.0, lon: 40.0, zoom: 3 },
       },
       {
@@ -247,7 +247,7 @@ export const CASES: CaseFile[] = [
       },
       {
         title: "One trend for the whole record",
-        body: "Run the test on all {years} years and the verdict for this cell is {verdict}, with a Sen slope of {slope} per decade (p = {p}). Taken alone, that result says almost nothing happened. Now look at the time series chart.",
+        body: "Run the test on all {years} years and the verdict for this cell is {verdict}, with a Sen slope of {slope} per decade (p {p}). Taken alone, that result says almost nothing happened. Now look at the time series chart.",
         focus: { variable: "ozone", lat: -65.25, lon: -64.25, zoom: 3 },
       },
       {
@@ -304,7 +304,7 @@ export const CASES: CaseFile[] = [
     steps: [
       {
         title: "The rains come back",
-        body: "The Sahel, the dry belt south of the Sahara, suffered a long drought in the 1970s and 1980s. Since then its seasonal rainfall has partly recovered (Biasutti 2019). Near Niamey, GPCP rainfall from satellites and rain gauges gives the verdict {verdict}, at {slope} per decade (p = {p}).",
+        body: "The Sahel, the dry belt south of the Sahara, suffered a long drought in the 1970s and 1980s. Since then its seasonal rainfall has partly recovered (Biasutti 2019). Near Niamey, GPCP rainfall from satellites and rain gauges gives the verdict {verdict}, at {slope} per decade (p {p}).",
         focus: { variable: "gpcp", lat: 13.5, lon: 2.5, zoom: 3 },
       },
       {
@@ -360,7 +360,7 @@ export const CASES: CaseFile[] = [
     steps: [
       {
         title: "Clearing air over Europe",
-        body: "Aerosol optical depth measures the haze in the whole column of air. Over central Germany the verdict is {verdict}, at {slope} per decade since {firstYear} (p = {p}). Aerosol pollution has fallen across Europe, North America and East Asia since about 2000 (Quaas et al. 2022).",
+        body: "Aerosol optical depth measures the haze in the whole column of air. Over central Germany the verdict is {verdict}, at {slope} per decade since {firstYear} (p {p}). Aerosol pollution has fallen across Europe, North America and East Asia since about 2000 (Quaas et al. 2022).",
         focus: { variable: "aod", lat: 51.0, lon: 11.25, zoom: 3 },
       },
       {
@@ -422,7 +422,7 @@ export const CASES: CaseFile[] = [
     steps: [
       {
         title: "A drought with a name",
-        body: "From 2010 central Chile had an unbroken run of dry years, with annual rainfall 25 to 45% below normal (Garreaud et al. 2017). A persistent pattern of pressure and winds over the South Pacific steered storms away, with a contribution from human-caused climate change (Boisier et al. 2016; Garreaud et al. 2020). At Santiago the precipitation verdict is {verdict}, at {slope} per decade (p = {p}).",
+        body: "From 2010 central Chile had an unbroken run of dry years, with annual rainfall 25 to 45% below normal (Garreaud et al. 2017). A persistent pattern of pressure and winds over the South Pacific steered storms away, with a contribution from human-caused climate change (Boisier et al. 2016; Garreaud et al. 2020). At Santiago the precipitation verdict is {verdict}, at {slope} per decade (p {p}).",
         focus: { variable: "precip", lat: -33.45, lon: -70.65, zoom: 4 },
       },
       {

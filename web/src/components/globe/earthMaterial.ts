@@ -35,7 +35,7 @@ export const earthFragment = /* glsl */ `
 
   vec2 gridUv(vec4 g, vec2 g2, float lat, float lon) {
     float row = (lat - g.x) / g.y;
-    float col = mod(lon - g.w, 360.0) / g2.x;
+    float col = (lon - g.w) / g2.x; // texture repeats in S, so no wrap seam
     return vec2((col + 0.5) / g2.y, (row + 0.5) / g.z);
   }
 
@@ -58,8 +58,9 @@ export const earthFragment = /* glsl */ `
     float lat = vUv.y * 180.0 - 90.0;
     float lon = vUv.x * 360.0 - 180.0;
     float land = texture2D(uLand, vUv).r;
-    vec3 ocean = vec3(0.043, 0.055, 0.071);
-    vec3 ground = vec3(0.105, 0.118, 0.137);
+    // Linear-light values (the output is encoded to sRGB once, at the end).
+    vec3 ocean = vec3(0.0033, 0.0044, 0.0061);
+    vec3 ground = vec3(0.0108, 0.0131, 0.0168);
     vec3 col = mix(ocean, ground, land);
 
     if (uHasPrev > 0.5 && uMix < 1.0) {

@@ -349,3 +349,31 @@
   border-color: var(--ink);
   color: var(--ground);
 }
+
+/* ---- Finish review fixes ---- */
+.insp-big {
+  font-family: var(--font);
+  font-size: 3rem;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  font-variant-numeric: proportional-nums;
+  font-feature-settings: normal;
+}
+
+.insp-gauge {
+  position: relative;
+  width: 160px;
+  height: 6px;
+  margin-top: 12px;
+  border-radius: 3px;
+}
+
+.insp-gauge i {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+  box-shadow: 0 0 0 1px var(--ground);
+}
