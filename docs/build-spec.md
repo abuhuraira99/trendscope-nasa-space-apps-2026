@@ -16,7 +16,7 @@ pipeline, the statistics library and the web app. Change it only together with e
 
 | Source | Access | Grid | Period |
 |---|---|---|---|
-| NASA POWER (MERRA-2, GPM IMERG, CERES) | `https://power.larc.nasa.gov/api/temporal/monthly/{point,regional}` (CORS `*`) | 0.5 lat x 0.625 lon | 1981 to 2025 |
+| NASA POWER (MERRA-2, CERES) | `https://power.larc.nasa.gov/api/temporal/monthly/{point,regional}` (CORS `*`) | 0.5 lat x 0.625 lon | 1981 to 2025 |
 | GISTEMP v4 (NASA GISS) | `https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz` | 2 x 2 | 1880 to now (use 1981+) |
 | GPCP v2.3 monthly (NASA GSFC / NOAA) | `https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc` | 2.5 x 2.5 | 1979 to now (use 1981+) |
 
@@ -34,7 +34,6 @@ native grid cell, complete calendar years only).
 | t2mwet | T2MWET | Wet-bulb temperature | °C | mean | heat |
 | cdd | CDD18_3 | Cooling degree days | °C·day | sum of monthly totals (POWER monthly value is the month total) | heat |
 | precip | PRECTOTCORR | Precipitation | mm/day | mean | water |
-| imerg | IMERG_PRECTOT | Precipitation (GPM IMERG) | mm/day | mean | water |
 | soil | GWETROOT | Root-zone soil wetness | 0 to 1 | mean | water |
 | evap | EVLAND | Land evaporation | mm/day | mean | water |
 | pw | PW | Precipitable water | cm | mean | water |

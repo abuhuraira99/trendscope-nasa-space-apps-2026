@@ -40,7 +40,7 @@ export const SOURCES = {
     venue: "NASA Langley Research Center, Hampton, Virginia",
     url: "https://power.larc.nasa.gov/",
     accessed: ACCESSED,
-    note: "Serves the MERRA-2, CERES SYN1deg, GEWEX SRB and GPM IMERG variables that TrendScope maps and analyses.",
+    note: "Serves the MERRA-2, CERES SYN1deg and GEWEX SRB variables that TrendScope maps and analyses.",
   },
   powerSourcesMeteorology: {
     id: "powerSourcesMeteorology",
@@ -276,7 +276,7 @@ export const SOURCES = {
     venue: "NASA EOSDIS Land Processes Distributed Active Archive Center",
     doi: "10.5067/MODIS/MOD13C2.061",
     url: doiUrl("10.5067/MODIS/MOD13C2.061"),
-    note: "Planned source for vegetation greenness (NDVI).",
+    note: "Source of the vegetation greenness (NDVI) map, averaged from 0.05 degree to 1 degree.",
   },
   watkins2015: {
     id: "watkins2015",
@@ -287,7 +287,18 @@ export const SOURCES = {
     venue: "Journal of Geophysical Research: Solid Earth 120(4), 2648-2671",
     doi: "10.1002/2014JB011547",
     url: doiUrl("10.1002/2014JB011547"),
-    note: "Planned source for terrestrial water storage (GRACE and GRACE-FO JPL mascons).",
+    note: "Describes the mascon method behind the GRACE and GRACE-FO total water storage map.",
+  },
+  jplMasconRl063: {
+    id: "jplMasconRl063",
+    kind: "dataset",
+    authors: "Wiese, D. N., for the GRACE-FO project",
+    year: 2024,
+    title: "JPL GRACE and GRACE-FO Mascon Ocean, Ice, and Hydrology Equivalent Water Height CRI Filtered RL06.3Mv04",
+    venue: "NASA Physical Oceanography Distributed Active Archive Center (PO.DAAC)",
+    doi: "10.5067/TEMSC-3JC634",
+    url: doiUrl("10.5067/TEMSC-3JC634"),
+    note: "Source of the total water storage map, including groundwater, from 2003.",
   },
   krotkov2013: {
     id: "krotkov2013",
@@ -810,8 +821,6 @@ export const DATASET_SOURCES: readonly SourceId[] = [
   "reichle2017",
   "wargan2017",
   "ucarMerra2",
-  "imergV07",
-  "huffman2020",
   "ceresSyn1deg",
   "rutan2015",
   "doelling2013",
@@ -823,9 +832,12 @@ export const DATASET_SOURCES: readonly SourceId[] = [
   "gpcpPsl",
   "adler2018",
   "adler2003",
+  "jplMasconRl063",
+  "watkins2015",
+  "didan2021",
 ];
 
-export const PLANNED_DATASET_SOURCES: readonly SourceId[] = ["didan2021", "watkins2015", "krotkov2013"];
+export const PLANNED_DATASET_SOURCES: readonly SourceId[] = ["krotkov2013"];
 
 export const DOCUMENTATION_SOURCES: readonly SourceId[] = [
   "powerReferencing",
