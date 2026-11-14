@@ -1,0 +1,7 @@
+name = "trendscope-earth"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"
+
+# Workers AI reads plain-language questions in the Ask box (free tier).
+[ai]
+binding = "AI"

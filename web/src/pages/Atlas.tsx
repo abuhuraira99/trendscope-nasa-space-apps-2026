@@ -11,6 +11,8 @@ import { rampCss } from "../lib/color/ramps";
 import { coord, fmt, pct, signed } from "../lib/format";
 import Inspector from "../components/inspector/Inspector";
 import SearchBox from "../components/SearchBox";
+import { askQuestion } from "../lib/ask";
+import { searchPlaces } from "../lib/geocode";
 import "./atlas.css";
 import "./atlas-extra.css";
 
@@ -32,6 +34,32 @@ export default function Atlas() {
   const searchRef = useRef<HTMLInputElement>(null);
   const [hover, setHover] = useState<{ lat: number; lon: number } | null>(null);
   const [tab, setTab] = useState<"explore" | "detective">("explore");
+  const [askNote, setAskNote] = useState<{ text: string; busy: boolean } | null>(null);
+  const setFocusVar = useAtlas((s) => s.setFocusVar);
+
+  const onAsk = async (question: string) => {
+    setAskNote({ text: "Reading your question", busy: true });
+    const r = await askQuestion(
+      question,
+      metas.map((m) => ({ id: m.id, name: info(m.id).name })),
+    );
+    const v = r.variables.find((id) => metas.some((m) => m.id === id)) ?? varId;
+    const hits = r.place ? await searchPlaces(r.place).catch(() => []) : [];
+    const hit = hits[0];
+    if (!hit) {
+      setAskNote({ text: "I could not find a place in that question. Try adding a city or a country.", busy: false });
+      return;
+    }
+    setVar(v);
+    setFocusVar(v);
+    pick({ lat: hit.lat, lon: hit.lon, name: [hit.name, hit.detail].filter(Boolean).join(", ") });
+    flyTo(hit.lat, hit.lon, 2.7);
+    setAskNote({
+      text: `${info(v).name} in ${hit.name}${r.via === "model" ? ". Question read by an AI model; every number comes from the NASA data." : "."}`,
+      busy: false,
+    });
+    window.setTimeout(() => setAskNote(null), 9000);
+  };
   const [twins, setTwins] = useState(false);
 
   // Keep the selected variable valid once the catalogue loads.
@@ -208,12 +236,20 @@ export default function Atlas() {
         <div className="stage-search">
           <SearchBox
             inputRef={searchRef}
+            onAsk={onAsk}
+            placeholder="Search a place, or ask: is Lahore getting more humid?"
             onSelect={(h) => {
               pick({ lat: h.lat, lon: h.lon, name: [h.name, h.detail].filter(Boolean).join(", ") });
               flyTo(h.lat, h.lon, 2.7);
             }}
           />
         </div>
+
+        {askNote && (
+          <p className={`ask-note ${askNote.busy ? "is-busy" : ""}`} role="status">
+            {askNote.text}
+          </p>
+        )}
 
         <Globe
           className="stage-globe"

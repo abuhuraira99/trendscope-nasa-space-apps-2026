@@ -1,14 +1,17 @@
 import { useEffect, useId, useRef, useState, type RefObject } from "react";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, Sparkles } from "lucide-react";
+import { looksLikeQuestion } from "../lib/ask";
 import { searchPlaces, type PlaceHit } from "../lib/geocode";
 import "./search.css";
 
 export default function SearchBox({
   onSelect,
+  onAsk,
   inputRef,
   placeholder = "Search a city, region or coordinates",
 }: {
   onSelect: (hit: PlaceHit) => void;
+  onAsk?: (question: string) => void;
   inputRef?: RefObject<HTMLInputElement | null>;
   placeholder?: string;
 }) {
@@ -68,6 +71,13 @@ export default function SearchBox({
         onFocus={() => hits.length && setOpen(true)}
         onBlur={() => window.setTimeout(() => setOpen(false), 150)}
         onKeyDown={(e) => {
+          if (e.key === "Enter" && onAsk && looksLikeQuestion(q)) {
+            e.preventDefault();
+            setOpen(false);
+            onAsk(q);
+            ref.current?.blur();
+            return;
+          }
           if (!open || !hits.length) return;
           if (e.key === "ArrowDown") {
             e.preventDefault();
@@ -82,7 +92,12 @@ export default function SearchBox({
         }}
       />
       {busy && <span className="search-busy" aria-hidden />}
-      {open && hits.length > 0 && (
+      {onAsk && looksLikeQuestion(q) && (
+        <p className="search-ask" aria-live="polite">
+          <Sparkles size={13} strokeWidth={1.75} aria-hidden /> Press Enter to ask this question
+        </p>
+      )}
+      {open && hits.length > 0 && !(onAsk && looksLikeQuestion(q)) && (
         <ul className="search-list" id={listId} role="listbox">
           {hits.map((h, i) => (
             <li

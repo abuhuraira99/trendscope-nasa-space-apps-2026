@@ -177,3 +177,39 @@
     font-size: var(--t-32);
   }
 }
+
+.ask-note {
+  position: absolute;
+  z-index: 5;
+  top: 70px;
+  left: 24px;
+  max-width: min(520px, calc(100% - 48px));
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--panel) 94%, transparent);
+  font-size: var(--t-13);
+  color: var(--ink-2);
+  animation: twins-in var(--d-med) var(--ease) both;
+}
+
+.ask-note.is-busy::after {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 8px;
+  vertical-align: -1px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  border-top-color: var(--ink-2);
+  animation: spin 0.8s linear infinite;
+}
+
+@media (max-width: 820px) {
+  .ask-note {
+    top: 62px;
+    left: 12px;
+  }
+}
