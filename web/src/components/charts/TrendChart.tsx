@@ -93,6 +93,8 @@ export default function TrendChart({
   }
 
   const ticksY = y.ticks(4);
+  const tickStep = ticksY.length > 1 ? Math.abs(ticksY[1] - ticksY[0]) : 1;
+  const tickDecimals = Math.max(0, Math.min(4, Math.ceil(-Math.log10(tickStep) - 1e-9)));
   const span = years[years.length - 1] - years[0];
   const step = span > 30 ? 10 : 5;
   const ticksX = years.filter((yr) => yr % step === 0);
@@ -121,7 +123,7 @@ export default function TrendChart({
             <g key={t} transform={`translate(0,${y(t)})`}>
               <line x1={M.left} x2={width - M.right} />
               <text x={M.left - 8} dy="0.32em" textAnchor="end">
-                {fmt(t, Math.abs(t) < 1 && t !== 0 ? Math.max(1, decimals) : 0)}
+                {fmt(t, tickDecimals)}
               </text>
             </g>
           ))}
