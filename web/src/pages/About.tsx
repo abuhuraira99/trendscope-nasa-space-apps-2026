@@ -3,11 +3,11 @@ import "../styles/page.css";
 import "./about.css";
 
 const TEAM = [
-  { name: "Abu Huraira", role: "Team lead. Statistics, data pipeline and the app" },
-  { name: "Hafiz Muhammad Haris", role: "Repository, documentation and deployment" },
-  { name: "Muhammad Zawar Khan", role: "NASA data access" },
-  { name: "Sania Shafiq", role: "Interface research and plain-language content" },
-  { name: "Muhammad Mohsin", role: "Media and communication" },
+  { name: "Abu Huraira", role: "Team lead" },
+  { name: "Hafiz Muhammad Haris", role: "" },
+  { name: "Muhammad Zawar Khan", role: "" },
+  { name: "Sania Shafiq", role: "" },
+  { name: "Muhammad Mohsin", role: "" },
 ];
 
 export default function About() {
@@ -51,7 +51,7 @@ export default function About() {
             {TEAM.map((t) => (
               <li key={t.name}>
                 <strong>{t.name}</strong>
-                <span>{t.role}</span>
+                {t.role && <span>{t.role}</span>}
               </li>
             ))}
           </ul>

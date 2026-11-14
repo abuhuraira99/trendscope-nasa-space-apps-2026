@@ -154,13 +154,13 @@ rebuild the data, see [pipeline/README.md](pipeline/README.md).
 
 Multan local event, Pakistan.
 
-| Member | Role |
+| Member | |
 |---|---|
-| Abu Huraira ([@abuhuraira99](https://github.com/abuhuraira99)) | Team lead, statistics, data pipeline and the app |
-| Hafiz Muhammad Haris | Repository, documentation and deployment |
-| Muhammad Zawar Khan | NASA data access |
-| Sania Shafiq | Interface research and plain-language content |
-| Muhammad Mohsin | Media and communication |
+| Abu Huraira ([@abuhuraira99](https://github.com/abuhuraira99)) | Team lead |
+| Hafiz Muhammad Haris | |
+| Muhammad Zawar Khan | |
+| Sania Shafiq | |
+| Muhammad Mohsin | |
 
 Some components were built with help from an AI coding agent. The team chose the methods and data
 and checked the results against published reference implementations and NASA records.
