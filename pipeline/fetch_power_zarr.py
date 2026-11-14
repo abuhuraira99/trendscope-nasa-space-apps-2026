@@ -8,7 +8,8 @@ Output per variable: data/raw/power_zarr/<PARAM>.annual.npz with
     years   int32 [Y]
     lat     float64 [nlat]  (south to north)
     lon     float64 [nlon]  (-180 to 180)
-    annual  float32 [Y, nlat, nlon]  annual mean (or sum for degree-day totals), NaN when < 10 months
+    annual  float32 [Y, nlat, nlon]  annual mean (or sum for degree-day totals);
+                                     NaN when fewer than 10 months
     count   int8    [Y, nlat, nlon]  months used
 Only complete calendar years (12 published months) are kept.
 
@@ -150,12 +151,32 @@ def fetch(store: str, param: str) -> None:
         annual, count, lon = annual[:, :, o], count[:, :, o], lon[o]
     OUT.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.stem + ".part.npz")
-    np.savez_compressed(tmp, years=np.array(keep, np.int32), lat=lat, lon=lon, annual=annual, count=count,
-                        units=attrs.get("units", ""), long_name=attrs.get("long_name", param), store=store)
+    np.savez_compressed(
+        tmp,
+        years=np.array(keep, np.int32),
+        lat=lat,
+        lon=lon,
+        annual=annual,
+        count=count,
+        units=attrs.get("units", ""),
+        long_name=attrs.get("long_name", param),
+        store=store,
+    )
     tmp.replace(out)
-    print(f"DONE {param}: years {keep[0]}-{keep[-1]} grid {nlat}x{nlon} in {time.time() - t0:.0f}s", flush=True)
-    (OUT / f"{param}.meta.json").write_text(json.dumps({"store": store, "years": [keep[0], keep[-1]],
-                                                        "units": attrs.get("units"), "attrs": attrs}))
+    print(
+        f"DONE {param}: years {keep[0]}-{keep[-1]} grid {nlat}x{nlon} in {time.time() - t0:.0f}s",
+        flush=True,
+    )
+    (OUT / f"{param}.meta.json").write_text(
+        json.dumps(
+            {
+                "store": store,
+                "years": [keep[0], keep[-1]],
+                "units": attrs.get("units"),
+                "attrs": attrs,
+            }
+        )
+    )
 
 
 def decode_coord(store_url: str, zmeta: dict, name: str) -> np.ndarray:

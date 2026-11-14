@@ -10,8 +10,8 @@ Run every command from the repository root with the project's own Python:
 .venv/Scripts/python.exe -I pipeline/<script>.py
 ```
 
-Nothing is installed globally. Reading netCDF files (GISTEMP and GPCP) needs two extra packages in
-the project venv, installed once:
+Nothing is installed globally. Reading netCDF files (GISTEMP, GPCP, GRACE and the MODIS subsets)
+needs two extra packages in the project venv, installed once:
 
 ```
 PIP_NO_CACHE_DIR=1 .venv/Scripts/python.exe -m pip install xarray netCDF4
@@ -24,8 +24,8 @@ PIP_NO_CACHE_DIR=1 .venv/Scripts/python.exe -m pip install xarray netCDF4
 | `fetch_power_zarr.py` | Downloads NASA POWER monthly grids from the public Zarr archive on AWS and turns them into annual values, one file per parameter | `data/raw/power_zarr/<PARAM>.annual.npz` |
 | `build_power_grids.py` | Runs the trend test on every POWER variable that has been downloaded | `web/public/data/grid/<id>.*.bin.gz`, `vars.json` |
 | `build_obs_grids.py` | Downloads GISTEMP v4 and GPCP v2.3 and runs the same test | `web/public/data/grid/gistemp.*`, `gpcp.*`, `vars.json` |
+| `build_earthdata_grids.py` | Downloads GRACE/GRACE-FO water storage and MODIS NDVI from NASA Earthdata (login needed) and runs the same test | `web/public/data/grid/tws.*`, `ndvi.*`, `vars.json` |
 | `fetch_cases.py` | Saves POWER point data for each curated case location, for offline use | `web/public/data/cases/<id>.json` |
-| `fetch_power_regional.py` | Older POWER downloader (10 x 10 degree API blocks). Too slow for the whole globe and no longer used by the build | `data/raw/power/` |
 
 Raw downloads stay in `data/raw/`, which git ignores.
 
@@ -58,7 +58,16 @@ Raw downloads stay in `data/raw/`, which git ignores.
    .venv/Scripts/python.exe -I pipeline/build_obs_grids.py
    ```
 
-4. Save the case files. The case list is `pipeline/cases.json`:
+4. Build the two Earthdata grids, `tws` and `ndvi` (see "Earthdata variables" below). They need a
+   free Earthdata login token in `.env` as `EARTHDATA_TOKEN=...`. The first run downloads about
+   44 MB of GRACE data and 300 small NDVI subsets (a few minutes); later runs only fetch new months.
+
+   ```
+   .venv/Scripts/python.exe -I pipeline/build_earthdata_grids.py
+   .venv/Scripts/python.exe -I pipeline/build_earthdata_grids.py --only tws
+   ```
+
+5. Save the case files. The case list is `pipeline/cases.json`:
 
    ```json
    [{"id": "lahore-heat", "lat": 31.52, "lon": 74.36, "params": ["T2M", "PRECTOTCORR"]}]
@@ -70,7 +79,7 @@ Raw downloads stay in `data/raw/`, which git ignores.
    .venv/Scripts/python.exe -I pipeline/fetch_cases.py
    ```
 
-To rebuild everything later, run steps 2, 3 and 4 again. Steps 2 and 4 only do new work, so they
+To rebuild everything later, run steps 2 to 5 again. Steps 2, 4 and 5 only do new work, so they
 are quick when nothing has changed.
 
 ## What the build does
@@ -124,6 +133,8 @@ result equals `pymannkendall.original_test`, and the tests check that.
 | POWER, CERES variables (`aod`, `cloud`, `solar`) | native 1 x 1 degree, 180 x 360 cells, from 2001 |
 | GISTEMP v4 | native 2 x 2 degrees, 90 x 180 cells |
 | GPCP v2.3 | native 2.5 x 2.5 degrees, 72 x 144 cells |
+| GRACE/GRACE-FO mascons (`tws`) | native 0.5 x 0.5 degrees, 360 x 720 cells, centres from -89.75, -179.75 |
+| MODIS MOD13C2 (`ndvi`) | 1 x 1 degree, 180 x 360 cells, centres from -89.525, -179.475 (one native 0.05 degree pixel per box, see below) |
 
 Each variable's `grid` entry in `vars.json` gives the exact layout. Row 0 is the southernmost row
 and column 0 is the westernmost column.
@@ -141,5 +152,45 @@ and column 0 is the westernmost column.
   build also empties any cell whose series never changes, such as a few ice-sheet cells.
 - Units are converted to the ones in the spec (for example kelvin to °C). The build stops for a
   variable whose global mean looks wrong after conversion, so a unit mix-up cannot reach the app.
-- `gistemp` and `gpcp` entries have no `param`, because they are not POWER parameters and have no
-  live point data.
+- `gistemp`, `gpcp`, `tws` and `ndvi` entries have no `param`, because they are not POWER
+  parameters and have no live point data.
+
+## Earthdata variables (`build_earthdata_grids.py`)
+
+These two need a free NASA Earthdata login. Make a token at https://urs.earthdata.nasa.gov
+("Generate Token") and put it in `.env` as `EARTHDATA_TOKEN=...`. The script sends the token only to
+`*.earthdata.nasa.gov` and `*.earthdatacloud.nasa.gov` hosts, never to the signed storage links they
+redirect to, and never prints it.
+
+```
+.venv/Scripts/python.exe -I pipeline/build_earthdata_grids.py              # both
+.venv/Scripts/python.exe -I pipeline/build_earthdata_grids.py --only ndvi  # one id
+.venv/Scripts/python.exe -I pipeline/build_earthdata_grids.py --force      # rebuild
+```
+
+After each build it prints the trend at a few known places (Punjab, Greenland, the Amazon and so
+on), so the map can be checked by eye.
+
+**`tws`, terrestrial water storage.** GRACE and GRACE-FO, NASA JPL mascons RL06.3 v04 with the
+Coastline Resolution Improvement filter, one 44 MB netCDF from PO.DAAC, cached in `data/raw/grace/`.
+The value is `lwe_thickness`: the water storage anomaly as an equivalent water layer in cm,
+relative to the 2004 to 2009 mean. A negative slope means the ground (groundwater, soil, snow, ice
+and surface water together) is losing water. The file's `land_mask` keeps land only, including
+Greenland and Antarctica. The mascons are 3 degree equal-area patches, so neighbouring 0.5 degree
+cells often hold the same value. The JPL gain factors (`scale_factor`) are not applied.
+
+GRACE has gaps: single months were skipped from 2011 to save the batteries, and there are 11 months
+between the end of GRACE (June 2017) and the start of GRACE-FO (June 2018). So `tws` is the one
+exception to the 10-month rule: a year needs 8 of its 12 months. The record runs from April 2002,
+so 2002 is incomplete and left out, as is the current year. 2017 and 2018 have only 5 months each
+and stay missing in the series (all cells -32768); the trend test keeps every other year in its real
+place in time. Two months have two solutions each (January 2012 and April 2015); they are averaged.
+
+**`ndvi`, vegetation greenness.** MODIS Terra MOD13C2 v061, monthly NDVI on the 0.05 degree grid,
+2001 to 2025. Each monthly file is about 95 MB, so the script asks NASA's cloud OPeNDAP server
+(Hyrax) for every 20th row and column only, starting at index 10: one native pixel near the centre
+of each 1 x 1 degree box, about 160 KB per month, cached in `data/raw/modis_ndvi/`. The granule list
+comes from CMR and is cached in `granules.json` (`--refresh` reloads it and fetches every month again).
+Stored values are int16; NDVI = value / 10000 (in these HDF4 files `scale_factor = 10000` means
+divide), fill -3000. The annual value is the mean of the months with data (at least 10 of 12), so
+snow-covered winter months count where MODIS reports a value for them.

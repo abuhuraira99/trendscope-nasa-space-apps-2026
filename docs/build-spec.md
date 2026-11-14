@@ -20,10 +20,10 @@ pipeline, the statistics library and the web app. Change it only together with e
 | GISTEMP v4 (NASA GISS) | `https://data.giss.nasa.gov/pub/gistemp/gistemp1200_GHCNv4_ERSSTv5.nc.gz` | 2 x 2 | 1880 to now (use 1981+) |
 | GPCP v2.3 monthly (NASA GSFC / NOAA) | `https://downloads.psl.noaa.gov/Datasets/gpcp/precip.mon.mean.nc` | 2.5 x 2.5 | 1979 to now (use 1981+) |
 
-Raw POWER blocks are cached by `pipeline/fetch_power_regional.py` in
-`data/raw/power/<PARAM>/box_<lat0>_<lon0>.npz` with arrays `lats`, `lons` (float32 per point),
-`months` (str `YYYYMM`), `values` (float32 [points, months], NaN = missing). Blocks overlap on their
-edges; deduplicate by coordinate.
+POWER grids come from NASA POWER's public analysis-ready Zarr archive on AWS Open Data
+(bucket `nasa-power`, MERRA-2 and CERES SYN1deg monthly spatial stores), downloaded by
+`pipeline/fetch_power_zarr.py` into `data/raw/power_zarr/<PARAM>.annual.npz` (annual values per
+native grid cell, complete calendar years only).
 
 ## Variables (ids are stable; the app, pipeline and content all key on them)
 

@@ -31,12 +31,15 @@ export default function SeasonBars({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const width = useElementWidth(ref, 400);
-  const maxAbs = Math.max(scale, ...bars.map((b) => Math.abs(b.slopePerDecade ?? 0))) || 1;
+  const vals = bars.map((b) => b.slopePerDecade ?? 0);
+  const maxAbs = Math.max(scale * 0.5, ...vals.map(Math.abs)) || 1;
+  const lo = Math.min(0, ...vals) * 1.12;
+  const hi = Math.max(0, ...vals) * 1.12;
   const x = scaleBand<number>()
     .domain(bars.map((b) => b.month))
     .range([4, width - 4])
     .padding(0.28);
-  const y = scaleLinear().domain([-maxAbs, maxAbs]).range([height - 20, 6]);
+  const y = scaleLinear().domain([lo === hi ? -1 : lo, lo === hi ? 1 : hi]).range([height - 20, 6]);
   const zero = y(0);
   const summary = bars
     .filter((b) => b.slopePerDecade !== null)

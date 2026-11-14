@@ -39,3 +39,9 @@ export function pct(v: number, digits = 0): string {
   if (!Number.isFinite(v)) return "–";
   return `${(v * 100).toFixed(digits)}%`;
 }
+
+/** "p < 0.0001" or "p = 0.003" */
+export function pEq(p: number): string {
+  const v = pValue(p);
+  return v.startsWith("<") ? `p ${v}` : `p = ${v}`;
+}

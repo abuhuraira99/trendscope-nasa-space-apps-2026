@@ -7,7 +7,7 @@ import { info } from "../../lib/catalog";
 import { reverseName } from "../../lib/geocode";
 import { analyzeAnnual, analyzeMonthly, deseasonalize, type AnnualResult, type MonthlyAnalysis } from "../../lib/stats";
 import { rampColor } from "../../lib/color/ramps";
-import { coord, fmt, pValue, pWords, signed } from "../../lib/format";
+import { coord, fmt, pEq, pValue, pWords, signed } from "../../lib/format";
 import TrendChart from "../charts/TrendChart";
 import SeasonBars from "../charts/SeasonBars";
 import "./inspector.css";
@@ -93,14 +93,17 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
   // Live monthly detail from NASA POWER at the exact point.
   useEffect(() => {
     const params = [...new Set(metas.map((m) => info(m.id).powerParam).filter((p): p is string => !!p))].slice(0, 20);
-    const ctrl = new AbortController();
+    let alive = true;
     setLive({ status: "loading" });
     const end = Math.max(...metas.map((m) => m.years[1]));
-    fetchPowerPoint(place.lat, place.lon, params, 1981, end, ctrl.signal).then(
-      (data) => setLive({ status: "ready", data }),
-      () => !ctrl.signal.aborted && setLive({ status: "error" }),
+    // The request is shared and cached, so it is never aborted; stale answers are ignored.
+    fetchPowerPoint(place.lat, place.lon, params, 1981, end).then(
+      (data) => alive && setLive({ status: "ready", data }),
+      () => alive && setLive({ status: "error" }),
     );
-    return () => ctrl.abort();
+    return () => {
+      alive = false;
+    };
   }, [metas, place.lat, place.lon]);
 
   const monthly: MonthlyAnalysis | null = useMemo(() => {
@@ -152,7 +155,7 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
     const total = Math.abs(res.totalChange);
     const body = res.significant
       ? `From ${res.firstYear} to ${res.lastYear}, ${vi.name.toLowerCase()} here changed by about ${fmt(total, vi.decimals)} ${vi.unitsLabel} (${res.slopePerDecade > 0 ? "up" : "down"}). If nothing were really changing, a pattern this steady would turn up by chance ${pWords(res.p)} times.`
-      : `The data drift ${res.slopePerDecade >= 0 ? "up" : "down"} by ${fmt(Math.abs(res.slopePerDecade), vi.decimals)} ${vi.unitsLabel} per decade, but year-to-year swings are large enough that chance could explain it (p = ${pValue(res.p)}).`;
+      : `The data drift ${res.slopePerDecade >= 0 ? "up" : "down"} by ${fmt(Math.abs(res.slopePerDecade), vi.decimals)} ${vi.unitsLabel} per decade, but year-to-year swings are large enough that chance could explain it (${pEq(res.p)}).`;
     return { head, body };
   })();
 
@@ -296,7 +299,7 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
                 />
                 {monthly.seasonal.ok && (
                   <p className="insp-caption">
-                    Seasonal Mann-Kendall test across all 12 months: p = {pValue(monthly.seasonal.p)}. Filled bars are months with a
+                    Seasonal Mann-Kendall test across all 12 months: {pEq(monthly.seasonal.p)}. Filled bars are months with a
                     significant trend on their own. Live monthly data from NASA POWER at this exact point.
                   </p>
                 )}
@@ -319,7 +322,7 @@ export default function Inspector({ place, metas, globeVar, onClose, onShowOnGlo
                 <strong className="num">
                   {signed(pairRow.slope, info(pairId).decimals)} {info(pairId).unitsLabel}
                 </strong>{" "}
-                per decade here (p {pValue(pairRow.p)}).{" "}
+                per decade here ({pEq(pairRow.p)}).{" "}
                 {res && res.ok && Math.sign(pairRow.slope) === Math.sign(res.slopePerDecade)
                   ? "Both records point the same way."
                   : "The two records disagree here, so treat this place with care."}
