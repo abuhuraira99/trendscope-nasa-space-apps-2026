@@ -9,6 +9,7 @@ const CaseFile = lazy(() => import("./pages/CaseFile"));
 const Method = lazy(() => import("./pages/Method"));
 const DataPage = lazy(() => import("./pages/DataPage"));
 const About = lazy(() => import("./pages/About"));
+const Demo = lazy(() => import("./pages/Demo"));
 
 function DeepLink() {
   const [params] = useSearchParams();
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/method" element={<Method />} />
           <Route path="/data" element={<DataPage />} />
           <Route path="/about" element={<About />} />
+          <Route path="/demo" element={<Demo />} />
           <Route path="*" element={<Atlas />} />
         </Routes>
       </Suspense>

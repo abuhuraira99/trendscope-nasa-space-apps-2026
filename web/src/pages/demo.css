@@ -1,0 +1,21 @@
+.demo-frame {
+  margin-top: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--shadow-panel);
+}
+
+.demo-frame video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.demo-credits {
+  margin-top: 14px;
+  font-size: var(--t-13);
+  color: var(--ink-3);
+}
