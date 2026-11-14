@@ -36,7 +36,8 @@ def main() -> None:
         down = valid & (sig >= 1.5) & (slope < 0)
         meta["summary"]["areaUp"] = round(float(weight[up].sum() / total), 4)
         meta["summary"]["areaDown"] = round(float(weight[down].sum() / total), 4)
-        print(f"{meta['id']:8s} up {meta['summary']['areaUp']:.3f} down {meta['summary']['areaDown']:.3f}")
+        up_share, down_share = meta["summary"]["areaUp"], meta["summary"]["areaDown"]
+        print(f"{meta['id']:8s} up {up_share:.3f} down {down_share:.3f}")
     path.write_text(json.dumps(catalogue, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
