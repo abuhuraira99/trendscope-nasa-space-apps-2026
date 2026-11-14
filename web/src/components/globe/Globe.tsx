@@ -309,7 +309,8 @@ function Pin({ pin }: { pin: GlobePin }) {
     born.current = performance.now();
   }, [pin.lat, pin.lon]);
   useEffect(() => {
-    ref.current?.lookAt(pos.clone().multiplyScalar(2));
+    // Orient in the globe's local frame (lookAt works in world space and breaks once the globe has turned).
+    ref.current?.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), pos.clone().normalize());
   }, [pos]);
   const { camera } = useThree();
   useFrame(() => {
