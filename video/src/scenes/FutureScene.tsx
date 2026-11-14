@@ -11,8 +11,8 @@ const CLIP_START = T.globeClip.futureClipStart;
 export function FutureScene({ frame, manifest }: { frame: number; manifest: Manifest }) {
   if (frame < FROM) return null;
   const inn = rise(frame, FROM, 22);
-  const scale = interpolate(frame, [FROM, T.durationInFrames], [1.045, 1.1]);
-  const shift = interpolate(frame, [FROM, T.durationInFrames], [400, 460]);
+  const scale = interpolate(frame, [FROM, T.durationInFrames], [0.875, 0.93]);
+  const shift = interpolate(frame, [FROM, T.durationInFrames], [440, 490]);
 
   const a = rise(frame, 634, 22);
   const aOut = fall(frame, 742, 12);
@@ -27,7 +27,7 @@ export function FutureScene({ frame, manifest }: { frame: number; manifest: Mani
         <AbsoluteFill style={{ justifyContent: "center", paddingLeft: 160 }}>
           <div
             style={{
-              maxWidth: 820,
+              whiteSpace: "nowrap",
               fontFamily: SANS,
               fontWeight: 600,
               fontSize: 68,
@@ -38,7 +38,11 @@ export function FutureScene({ frame, manifest }: { frame: number; manifest: Mani
               transform: `translateY(${(1 - a) * 26 - (1 - aOut) * 14}px)`,
             }}
           >
-            Free and open, for students, cities and climate planners.
+            Free and open,
+            <br />
+            for students, cities
+            <br />
+            and climate planners.
           </div>
         </AbsoluteFill>
       )}
@@ -49,7 +53,7 @@ export function FutureScene({ frame, manifest }: { frame: number; manifest: Mani
               style={{
                 fontFamily: MONO,
                 fontWeight: 500,
-                fontSize: 52,
+                fontSize: 48,
                 letterSpacing: "-0.02em",
                 color: C.ink,
                 opacity: u,

@@ -11,7 +11,7 @@ export function GlobeBackdrop({
   manifest,
   index,
   scale,
-  shift = 400,
+  shift = 440,
 }: {
   manifest: Manifest;
   index: number;
@@ -31,7 +31,7 @@ export function GlobeBackdrop({
       {/* Keep the left side calm for the words. */}
       <AbsoluteFill
         style={{
-          background: `linear-gradient(90deg, ${C.ground} 0%, ${C.ground} 26%, rgba(11,13,16,0.72) 44%, rgba(11,13,16,0) 62%)`,
+          background: `linear-gradient(90deg, ${C.ground} 0%, ${C.ground} 22%, rgba(11,13,16,0.6) 38%, rgba(11,13,16,0) 50%)`,
         }}
       />
     </AbsoluteFill>

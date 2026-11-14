@@ -5,13 +5,18 @@ export type Manifest = {
   site?: string;
   recordedAt?: string;
   data?: { datasets: number; years: number; period: [number, number] };
-  globe?: { frames: number; dir: string };
+  globe?: { frames: number; dir: string; variable?: string | null };
   app?: {
     frames: number;
     dir: string;
     dsf?: number;
     inspector?: Rect | null;
-    marks?: { picked?: number };
-    facts?: Record<string, unknown>;
+    marks?: { picked?: number; scrubStart?: number; scrubEnd?: number };
+    facts?: {
+      verdict?: string | null;
+      headline?: string | null;
+      place?: string | null;
+      [key: string]: unknown;
+    };
   };
 };

@@ -215,13 +215,31 @@ async function recordGlobe(browser) {
   const { context, page, cdp } = await newPage(browser, { dsf: 1, hideUi: true });
   await page.goto(`${SITE}/`, { waitUntil: "domcontentloaded", timeout: 90_000 });
   await freezeCssTimeline(cdp);
+  // Show wet-bulb temperature (humid heat). The rail is hidden, so press its row from script;
+  // the switch happens during warm-up, before any frame is saved.
+  await page.waitForFunction(() => document.querySelectorAll("button.var-row").length > 0, null, {
+    timeout: 60_000,
+    polling: 200,
+  });
+  const globeVar = await page.evaluate((names) => {
+    const rows = [...document.querySelectorAll("button.var-row")];
+    for (const n of names) {
+      const row = rows.find((b) => (b.querySelector(".var-name")?.textContent ?? b.innerText).trim() === n);
+      if (row) {
+        row.click();
+        return n;
+      }
+    }
+    return null;
+  }, ["Wet-bulb temperature"]);
+  log("globe variable:", globeVar ?? "default");
   // 4.6 s of app time so the idle spin is already turning when the clip starts.
   await warmUp(page, "globe", Math.round(4.6 * FPS));
   const rec = new Recorder(page, cdp, dir);
   await rec.holdUntil(timeline.globeClip.frames / FPS);
   await page.screenshot({ path: path.join(OUT, "check-globe.png") });
   await context.close();
-  return { frames: rec.frame, dir: "footage/globe" };
+  return { frames: rec.frame, dir: "footage/globe", variable: globeVar };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -272,8 +290,8 @@ async function recordApp(browser) {
 
   // 1. Switch variables (all on the same MERRA-2 grid, so the globe crossfades cleanly).
   const plan = [
-    { names: ["Total ozone", "Water vapour in the air", "Root-zone soil wetness"], clickAt: 1.1 },
-    { names: ["Precipitation", "Precipitation (observed)"], clickAt: 2.15 },
+    { names: ["Precipitable water", "Water vapour in the air", "Root-zone soil wetness"], clickAt: 1.1 },
+    { names: ["Precipitation"], clickAt: 2.15 },
     { names: ["Wet-bulb temperature"], clickAt: 3.1, required: true },
   ];
   facts.variablesShown = [];
@@ -351,40 +369,44 @@ async function recordApp(browser) {
   await rec.capture();
   await page.mouse.up();
 
-  // Pointer moves aside while the camera flies in.
-  await rec.glide(1330, 960, 0.8);
-  await rec.holdUntil(8.5);
-
-  // 4. Scroll to the scan of every variable at this place.
-  const body = (await page.$(".insp-body")) ? ".insp-body" : ".inspector";
-  const scanTop = await page.evaluate((body) => {
-    const scroller = document.querySelector(body);
-    const first = document.querySelector(".scan-row");
-    if (!scroller || !first) return null;
-    const section = first.closest("section") ?? first.parentElement;
-    const heading = section?.querySelector("h3, h2") ?? first;
-    const offset = heading.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
-    return Math.max(0, Math.min(scroller.scrollHeight - scroller.clientHeight, offset - 18));
-  }, body);
-  if (scanTop !== null) {
-    await rec.scrollTo(body, scanTop, 1.0);
-  }
   facts.scan = await page.evaluate(() =>
     [...document.querySelectorAll(".scan-row")].map((r) => r.innerText.replace(/\s+/g, " ").trim()),
   );
-  const air = await page.evaluate(() => {
-    const row = [...document.querySelectorAll(".scan-row")].find((r) => /^Air temperature\b/.test(r.innerText.trim()));
-    if (!row) return null;
-    const b = row.getBoundingClientRect();
-    return { x: b.x, y: b.y, width: b.width, height: b.height, text: row.innerText.replace(/\s+/g, " ").trim() };
-  });
-  facts.airTemperature = air?.text ?? null;
-  await rec.holdUntil(9.8);
-  if (air) await rec.glide(air.x + air.width * 0.62, air.y + air.height / 2, 0.6);
+  facts.evidence = await page.evaluate(() =>
+    [...document.querySelectorAll(".stats > div")].slice(0, 4).map((r) => r.innerText.replace(/\s+/g, " ").trim()),
+  );
+
+  // 4. While the camera flies in, the pointer moves to the yearly chart, then scrubs along it:
+  //    the app's hover line and readout show each year's value from 1981 to the latest year.
+  const chart =
+    (await boxOf(page, ".inspector .chart svg")) ?? (await boxOf(page, '.inspector svg[role="img"]'));
+  if (chart) {
+    const y = chart.y + chart.height * 0.5;
+    const x0 = chart.x + chart.width * 0.1;
+    const x1 = chart.x + chart.width * 0.965;
+    await rec.glide(x0, y, 1.0);
+    await rec.holdUntil(8.4);
+    rec.marks.scrubStart = rec.t;
+    const n = Math.round(2.2 * FPS);
+    for (let i = 1; i <= n; i++) {
+      const k = i / n;
+      // Even speed in the middle, soft start and stop.
+      const e = k < 0.15 ? (k * k) / 0.255 : k > 0.85 ? 1 - ((1 - k) * (1 - k)) / 0.255 : (k - 0.075) / 0.85;
+      rec.mouse = { x: x0 + (x1 - x0) * e, y };
+      await page.mouse.move(rec.mouse.x, y);
+      await rec.capture();
+    }
+    rec.marks.scrubEnd = rec.t;
+    facts.chartTip = await page.evaluate(() => document.querySelector(".chart-tip")?.innerText.replace(/\s+/g, " ").trim() ?? null);
+  } else {
+    log("chart not found; the pointer rests instead");
+    await rec.glide(1330, 960, 0.8);
+  }
+  facts.chart = chart;
   await rec.holdUntil(timeline.appClip.frames / FPS);
   await page.screenshot({ path: path.join(OUT, "check-app.png") });
   await context.close();
-  return { frames: rec.frame, dir: "footage/app", dsf: 1.5, inspector, air, marks: rec.marks, facts };
+  return { frames: rec.frame, dir: "footage/app", dsf: 1.5, inspector, marks: rec.marks, facts };
 }
 
 // ---------------------------------------------------------------------------------------------

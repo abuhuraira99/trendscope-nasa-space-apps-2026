@@ -10,7 +10,7 @@ const CARD = { scale: 0.84, top: 34 };
 const CARD_W = 1920 * CARD.scale;
 const CARD_H = 1080 * CARD.scale;
 const CARD_LEFT = (1920 - CARD_W) / 2;
-const ZOOM = 1.42;
+const ZOOM = 1.28;
 
 function captionText(key: string, m: Manifest) {
   if (key === "atlas") {
@@ -20,7 +20,17 @@ function captionText(key: string, m: Manifest) {
       : "NASA datasets. Every place on Earth.";
   }
   if (key === "test") return "Mann-Kendall tests with false discovery control: real trends, not noise.";
-  return "Lahore: humid heat rising fast while the thermometer barely moves.";
+  return lahoreCaption(m);
+}
+
+/** Built from the verdict the app showed in this recording, e.g. "+0.57 °C per decade". */
+function lahoreCaption(m: Manifest) {
+  const verdict = m.app?.facts?.verdict ?? "";
+  const headline = m.app?.facts?.headline ?? "";
+  const num = verdict.match(/^\s*\+?(\d+(?:\.\d+)?)\s*(°C)\s*per decade/);
+  const strength = headline.includes(",") ? headline.slice(headline.lastIndexOf(",") + 1).trim() : "";
+  if (num && strength) return `Lahore: humid heat rising ${num[1]} ${num[2]} per decade, ${strength}.`;
+  return "Lahore: humid heat is rising, and the test says it is real.";
 }
 
 /** 0:10 to 0:21. The real app, recorded from the live site. */
@@ -35,7 +45,12 @@ export function AppScene({ frame, manifest }: { frame: number; manifest: Manifes
     extrapolateRight: "clamp",
     easing: easeOut,
   });
-  const z = 1 + (ZOOM - 1) * p;
+  // After the zoom lands, a slow push keeps the shot alive while the chart is read.
+  const drift = interpolate(frame, [zoomStart + sec(T.appClip.zoomInDuration), END], [0, 0.04], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const z = 1 + (ZOOM - 1) * p + drift;
   // Keep the right edge (the investigation panel) pinned while zooming in, and drop the top bar.
   const ox = 1920 - 1920 / z;
   const oy = 40 * p;

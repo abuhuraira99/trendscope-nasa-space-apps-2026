@@ -12,7 +12,7 @@ export function HeroScene({ frame, manifest }: { frame: number; manifest: Manife
   if (frame < FROM || frame > END) return null;
   const globeIn = rise(frame, FROM, 22);
   const out = fall(frame, 292, 16);
-  const scale = interpolate(frame, [FROM, END], [1.0, 1.045]);
+  const scale = interpolate(frame, [FROM, END], [0.84, 0.875]);
   const w = rise(frame, 152, 24);
   const tg = rise(frame, 163, 26);
   return (
@@ -38,7 +38,6 @@ export function HeroScene({ frame, manifest }: { frame: number; manifest: Manife
         <div
           style={{
             marginTop: 30,
-            maxWidth: 660,
             fontFamily: SANS,
             fontWeight: 500,
             fontSize: 44,
@@ -49,7 +48,9 @@ export function HeroScene({ frame, manifest }: { frame: number; manifest: Manife
             transform: `translateY(${(1 - tg) * 22}px)`,
           }}
         >
-          See where Earth is changing, and prove it.
+          See where Earth is changing,
+          <br />
+          and prove it.
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
