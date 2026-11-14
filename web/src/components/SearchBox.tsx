@@ -20,6 +20,7 @@ export default function SearchBox({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [asked, setAsked] = useState<string | null>(null);
   const listId = useId();
   const ownRef = useRef<HTMLInputElement>(null);
   const ref = inputRef ?? ownRef;
@@ -74,6 +75,7 @@ export default function SearchBox({
           if (e.key === "Enter" && onAsk && looksLikeQuestion(q)) {
             e.preventDefault();
             setOpen(false);
+            setAsked(q);
             onAsk(q);
             ref.current?.blur();
             return;
@@ -92,7 +94,7 @@ export default function SearchBox({
         }}
       />
       {busy && <span className="search-busy" aria-hidden />}
-      {onAsk && looksLikeQuestion(q) && (
+      {onAsk && looksLikeQuestion(q) && q !== asked && (
         <p className="search-ask" aria-live="polite">
           <Sparkles size={13} strokeWidth={1.75} aria-hidden /> Press Enter to ask this question
         </p>
