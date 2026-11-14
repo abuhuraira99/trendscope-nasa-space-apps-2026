@@ -29,6 +29,8 @@
 }
 
 .about-demo {
+  justify-self: start;
+  align-self: start;
   margin-top: 20px;
 }
 
